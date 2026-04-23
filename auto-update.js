@@ -12,7 +12,7 @@
 // ─── CONFIGURE THESE ──────────────────────────────────────────────────────────
 const CANONICAL_URL  = 'https://mwonka.github.io/gstack-mastery-guide/';
 const GITHUB_REPO    = 'https://github.com/mwonka/gstack-mastery-guide';
-const GUIDE_VERSION  = '1.0';
+const GUIDE_VERSION  = '1.1';
 const LAST_UPDATED   = 'April 2026';
 // ──────────────────────────────────────────────────────────────────────────────
 

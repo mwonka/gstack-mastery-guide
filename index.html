@@ -509,6 +509,124 @@
   }
   .gu-sidebar-meta a { color: #9d8ff5; text-decoration: none; }
   .gu-sidebar-meta a:hover { text-decoration: underline; }
+
+  /* ──────────────────────────────────────────────────────────────
+     Prompt Builder
+     ────────────────────────────────────────────────────────────── */
+  .pb-wrap {
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .pb-row { display: flex; flex-direction: column; gap: 6px; }
+  .pb-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .pb-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .pb-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 106, 239, 0.18);
+  }
+  .pb-textarea {
+    resize: vertical;
+    min-height: 110px;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  .pb-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .pb-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .pb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, opacity 0.15s, color 0.15s;
+  }
+  .pb-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .pb-btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .pb-btn-primary:hover:not(:disabled) { background: var(--accent-light); }
+  .pb-btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border);
+  }
+  .pb-btn-ghost:hover:not(:disabled) {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .pb-status {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .pb-status.pb-error { color: var(--red); }
+  .pb-status.pb-success { color: var(--green); }
+  .pb-output-wrap {
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .pb-output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .pb-output {
+    margin: 0;
+    padding: 16px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 520px;
+    overflow-y: auto;
+  }
 </style>
 </head>
 <body>
@@ -524,6 +642,7 @@
   <div class="nav-section">Foundations</div>
   <a class="nav-link active" href="#what-is-gstack"><span class="icon">&#9733;</span> What is gstack?</a>
   <a class="nav-link" href="#mental-model"><span class="icon">&#9881;</span> The Mental Model</a>
+  <a class="nav-link" href="#install"><span class="icon">&#128230;</span> Install From Zero</a>
   <a class="nav-link" href="#getting-started"><span class="icon">&#9654;</span> Getting Started</a>
 
   <div class="nav-section">The Core Workflow</div>
@@ -548,6 +667,9 @@
   <a class="nav-link" href="#prompting-tips"><span class="icon">&#128172;</span> Prompting Tips</a>
   <a class="nav-link" href="#mistakes"><span class="icon">&#9888;</span> Common Mistakes</a>
   <a class="nav-link" href="#checklist"><span class="icon">&#9745;</span> Mastery Checklist</a>
+
+  <div class="nav-section">Tools</div>
+  <a class="nav-link" href="#prompt-builder"><span class="icon">&#9889;</span> Prompt Builder</a>
 </nav>
 
 <div class="main">
@@ -632,6 +754,72 @@
       <div class="tip-title">You don't always need every phase</div>
       <p>Fixing a small bug? You might jump straight to Build &rarr; Review &rarr; Ship. Building a new product from scratch? Start from Think. gstack is a toolkit, not a prison — use what fits.</p>
     </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Install from zero (Mac)             -->
+  <!-- ============================================ -->
+  <section id="install">
+    <h2>Install gstack From Zero (Mac)</h2>
+    <p class="subtitle">If you've never opened Terminal before, start here. Every step is a copy-paste. Total time: about 15 minutes, most of which is waiting for downloads.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-green">BEFORE YOU START</span>
+        <strong>What you'll end up with</strong>
+      </div>
+      <p>A working gstack setup on your Mac: Claude Code installed, gstack's 28+ slash commands ready to use, and your first session running in under 20 minutes.</p>
+      <p>You will <strong>not</strong> need to know how to code. You will need to paste commands into a black window (called Terminal) and click "Allow" on a few system prompts.</p>
+    </div>
+
+    <h3>Step 1 — Open Terminal</h3>
+    <p>Terminal is a built-in app on every Mac. It's the black window where you type commands directly to your computer.</p>
+    <p>To open it: press <span class="cmd">Cmd + Space</span> to open Spotlight, type <strong>Terminal</strong>, hit Enter. A black or white window will open. That's it — you're in.</p>
+    <p class="tip">Leave this window open for the rest of the install. Everything you do is pasting into this window.</p>
+
+    <h3>Step 2 — Install Homebrew</h3>
+    <p>Homebrew is a tool that lets you install other tools with a single command. Think of it as the App Store for developer software. Installing it once unlocks every other step.</p>
+    <p>Copy this entire line, paste it into Terminal, hit Enter:</p>
+    <div class="code-block">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+    <p>It will ask for your Mac password. <strong>You won't see anything as you type</strong> — that's normal, it's a security feature. Type your password anyway and hit Enter.</p>
+    <p>Installation takes 2–5 minutes. When it finishes, you'll see <em>"Installation successful!"</em></p>
+    <p class="tip">If Terminal prints <em>"Next steps"</em> with extra commands at the end of Homebrew's install (usually two lines starting with <span class="cmd">echo</span> and <span class="cmd">eval</span>), copy and run those too. They tell your computer where to find Homebrew.</p>
+
+    <h3>Step 3 — Install Node.js</h3>
+    <p>Node is the runtime Claude Code is built on. One command:</p>
+    <div class="code-block">brew install node</div>
+    <p>Takes about a minute. When your prompt comes back without errors, you're done.</p>
+
+    <h3>Step 4 — Install Claude Code</h3>
+    <div class="code-block">npm install -g @anthropic-ai/claude-code</div>
+    <p>This installs Claude Code globally on your machine. Another minute or so.</p>
+
+    <h3>Step 5 — Install gstack</h3>
+    <p>gstack isn't one "thing" — it's a bundle of skills you drop into Claude Code. Run gstack's installer:</p>
+    <div class="code-block">curl -fsSL https://gstack.dev/install.sh | bash</div>
+    <p>This places gstack's slash commands into the right folder so Claude Code picks them up automatically on your next session.</p>
+
+    <h3>Step 6 — Start your first gstack session</h3>
+    <p>Pick a folder to work in. If you don't have one, make a new one on your Desktop:</p>
+    <div class="code-block">mkdir ~/Desktop/my-first-gstack<br>cd ~/Desktop/my-first-gstack</div>
+    <p>Now launch Claude Code:</p>
+    <div class="code-block">claude</div>
+    <p>Claude Code opens inside Terminal. First-time only, it walks you through signing in with your Anthropic account. Follow the prompts.</p>
+    <p>Once you're in, try your first slash command:</p>
+    <div class="code-block">/careful</div>
+    <p>If gstack loaded correctly, Claude will confirm safety mode is on. You're live.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-yellow">STUCK?</span>
+        <strong>Common first-time errors</strong>
+      </div>
+      <p><strong>"command not found: brew"</strong> — Homebrew's install finished but your shell doesn't know where it is yet. Close Terminal completely (<span class="cmd">Cmd + Q</span>), reopen it, try again.</p>
+      <p><strong>"permission denied" during npm install</strong> — macOS blocking the install. Prefix the command with <span class="cmd">sudo</span>, like <span class="cmd">sudo npm install -g @anthropic-ai/claude-code</span>. It'll ask for your Mac password.</p>
+      <p><strong>Slash commands don't appear in Claude Code</strong> — gstack didn't install into the right directory. Check that <span class="cmd">~/.claude/skills/gstack</span> exists. If not, re-run Step 5.</p>
+    </div>
+
+    <p class="tip">From here, keep reading. The next section (<em>Getting Started</em>) shows you what to type once you're inside a session.</p>
   </section>
 
   <!-- ============================================ -->
@@ -1864,6 +2052,48 @@ GOOD: "I need a web app where restaurant owners can manage their<br>
     </ul>
   </section>
 
+  <!-- ============================================ -->
+  <!-- SECTION: Embedded Prompt Builder             -->
+  <!-- ============================================ -->
+  <section id="prompt-builder">
+    <h2>Prompt Builder</h2>
+    <p class="subtitle">Describe what you want to do in plain English. Get back a ready-to-paste gstack prompt with the right slash commands in the right order.</p>
+
+    <div class="card" style="border-color: var(--border);">
+      <div class="card-header">
+        <span class="badge badge-blue">HOW IT WORKS</span>
+        <strong>Bring your own Anthropic API key</strong>
+      </div>
+      <p>This tool calls Claude directly from your browser using <em>your</em> Anthropic API key. Your key stays in this browser tab — it's not stored on any server and it disappears when you close the tab. Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style="color: var(--accent);">console.anthropic.com</a>. A typical conversion costs less than a cent.</p>
+    </div>
+
+    <div class="pb-wrap">
+      <div class="pb-row">
+        <label class="pb-label" for="pb-key">Your Anthropic API key</label>
+        <input id="pb-key" class="pb-input" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        <div class="pb-hint">Stored only in this tab's memory. Cleared when you close the tab.</div>
+      </div>
+
+      <div class="pb-row">
+        <label class="pb-label" for="pb-task">Describe your task in plain English</label>
+        <textarea id="pb-task" class="pb-input pb-textarea" rows="5" placeholder="Example: I want to build a landing page for my coaching business. Audience is busy founders. Goal is to book a free intro call."></textarea>
+      </div>
+
+      <div class="pb-row pb-actions">
+        <button id="pb-generate" class="pb-btn pb-btn-primary">Generate gstack prompt</button>
+        <span id="pb-status" class="pb-status"></span>
+      </div>
+
+      <div id="pb-output-wrap" class="pb-output-wrap" hidden>
+        <div class="pb-output-header">
+          <strong>Your gstack prompt</strong>
+          <button id="pb-copy" class="pb-btn pb-btn-ghost">Copy</button>
+        </div>
+        <pre id="pb-output" class="pb-output"></pre>
+      </div>
+    </div>
+  </section>
+
   <div style="margin-top: 80px; padding: 32px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); text-align: center;">
     <p style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">You've reached the end.</p>
     <p style="color: var(--text-muted); margin: 0;">Now go use <span class="cmd">/office-hours</span> on something real. That's where mastery begins.</p>
@@ -2002,6 +2232,216 @@ GOOD: "I need a web app where restaurant owners can manage their<br>
       }, 15000);
     }
   })();
+</script>
+
+<script>
+/* ============================================================
+   Prompt Builder — calls Anthropic API from the user's browser
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var keyEl     = document.getElementById('pb-key');
+  var taskEl    = document.getElementById('pb-task');
+  var btnEl     = document.getElementById('pb-generate');
+  var statusEl  = document.getElementById('pb-status');
+  var outWrap   = document.getElementById('pb-output-wrap');
+  var outEl     = document.getElementById('pb-output');
+  var copyBtn   = document.getElementById('pb-copy');
+
+  if (!keyEl || !taskEl || !btnEl) return;
+
+  // Restore key from sessionStorage (tab-scoped, disappears on close)
+  try {
+    var saved = sessionStorage.getItem('pb_anthropic_key');
+    if (saved) keyEl.value = saved;
+  } catch (e) {}
+
+  keyEl.addEventListener('input', function () {
+    try { sessionStorage.setItem('pb_anthropic_key', keyEl.value.trim()); } catch (e) {}
+  });
+
+  function setStatus(msg, type) {
+    statusEl.textContent = msg || '';
+    statusEl.classList.remove('pb-error', 'pb-success');
+    if (type === 'error')   statusEl.classList.add('pb-error');
+    if (type === 'success') statusEl.classList.add('pb-success');
+  }
+
+  var SYSTEM_PROMPT = [
+    "You are the gstack Prompt Builder. Your job is to take the user's plain-English task and return a ready-to-paste gstack prompt — a clear, structured sequence of slash commands with the right context filled in. The user will copy it directly into their Claude Code / gstack session.",
+    "",
+    "gstack is a toolkit of 28+ slash commands that turn Claude Code into a structured software team. Each command activates a different role (CEO, designer, engineer, QA, etc.) and hands work off in a disciplined sequence.",
+    "",
+    "Core workflow cycle: Think → Plan → Design → Build → Review → Test → Ship → Reflect. Not every task needs every phase — pick the right subset.",
+    "",
+    "HOW TO CLASSIFY THE TASK:",
+    "- New idea / product → start from Think (/office-hours)",
+    "- Known feature to build → start from Plan (/plan-ceo-review or /autoplan)",
+    "- Design work → start from Design (/design-consultation or /design-shotgun)",
+    "- Fix / debug → go straight to Build/Review (/investigate, /review)",
+    "- Ship existing work → go to Ship (/ship, /land-and-deploy)",
+    "- Content / writing → use Plan + Build phase",
+    "- Security / performance audit → /cso or /benchmark",
+    "",
+    "PROMPT STRUCTURE (3 parts):",
+    "1. Safety header — almost always start with /careful",
+    "2. The command sequence — slash commands in order, with a short inline comment",
+    "3. The task context — what's being built, for whom, and what success looks like",
+    "",
+    "FILL IN CONTEXT INTELLIGENTLY. Don't leave placeholders like [YOUR APP HERE]. Use what the user told you verbatim. If they said 'I want to build a blog article about LinkedIn AI interviews for wonka.work', write that into the prompt.",
+    "",
+    "COMMAND REFERENCE:",
+    "Think: /office-hours (challenges an idea with 6 hard questions)",
+    "Plan: /plan-ceo-review, /plan-eng-review, /plan-design-review, /autoplan (all three in sequence)",
+    "Design: /design-consultation (full system, outputs DESIGN.md), /design-shotgun (3 directions), /design-html (design → HTML/CSS), /design-review",
+    "Build: no slash command — say 'Now build it' or 'Implement the plan'",
+    "Review: /review (bugs, security, code quality), /cso (deep security audit)",
+    "Test: /qa (browser E2E + auto-fix), /qa-only (report only), /benchmark (perf)",
+    "Ship: /ship (creates PR), /land-and-deploy (merge + deploy), /canary (monitor)",
+    "Reflect: /retro, /learn",
+    "Safety: /careful (always use at start), /freeze [dir], /guard [dir]",
+    "Browse: /browse [url], /connect-chrome (real Chrome with auth)",
+    "",
+    "OUTPUT FORMAT (return exactly this shape, no surrounding markdown fences):",
+    "",
+    "# gstack prompt for: [one-line task summary]",
+    "",
+    "[2-3 sentence explanation of which phases apply and why]",
+    "",
+    "/careful                        ← always start here — enables safety mode",
+    "",
+    "/command-1                      ← one-line comment on what this does",
+    "> \"Concrete task context in the user's own words, rewritten clearly.\"",
+    "",
+    "/command-2                      ← one-line comment",
+    "> Any approval/handoff note",
+    "",
+    "[build instruction when it's time to code]",
+    "> \"Build it following the approved plan. Start with [first piece].\"",
+    "",
+    "/review",
+    "/qa",
+    "/ship",
+    "",
+    "Tip: [one practical sentence about what to watch for on this specific task]",
+    "",
+    "TONE: Write like a clear-thinking senior operator briefing a team. Specific about the outcome, not the implementation. Context-rich — who is this for, what does success look like. No vague filler. Don't prescribe technology choices unless the user asked."
+  ].join("\n");
+
+  btnEl.addEventListener('click', function () {
+    var key  = (keyEl.value || '').trim();
+    var task = (taskEl.value || '').trim();
+
+    if (!key) {
+      setStatus('Paste your Anthropic API key first.', 'error');
+      keyEl.focus();
+      return;
+    }
+    if (!/^sk-ant-/.test(key)) {
+      setStatus('That doesn\u2019t look like an Anthropic key (should start with sk-ant-).', 'error');
+      return;
+    }
+    if (!task) {
+      setStatus('Describe what you want to do first.', 'error');
+      taskEl.focus();
+      return;
+    }
+
+    btnEl.disabled = true;
+    copyBtn && (copyBtn.disabled = true);
+    setStatus('Generating\u2026');
+    outWrap.hidden = true;
+    outEl.textContent = '';
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        system: SYSTEM_PROMPT,
+        messages: [{
+          role: 'user',
+          content: 'Convert this plain-English task into a ready-to-paste gstack prompt:\n\n' + task
+        }]
+      })
+    })
+    .then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, status: res.status, data: data }; });
+    })
+    .then(function (result) {
+      if (!result.ok) {
+        var msg = (result.data && result.data.error && result.data.error.message)
+          ? result.data.error.message
+          : ('HTTP ' + result.status);
+        throw new Error(msg);
+      }
+      var blocks = (result.data && result.data.content) || [];
+      var text = blocks
+        .filter(function (b) { return b && b.type === 'text'; })
+        .map(function (b) { return b.text; })
+        .join('\n\n')
+        .trim();
+      if (!text) throw new Error('Empty response from Claude.');
+
+      outEl.textContent = text;
+      outWrap.hidden = false;
+      setStatus('Done.', 'success');
+      outWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    })
+    .catch(function (err) {
+      setStatus('Error: ' + (err && err.message ? err.message : String(err)), 'error');
+    })
+    .then(function () {
+      btnEl.disabled = false;
+      copyBtn && (copyBtn.disabled = false);
+    });
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var text = outEl.textContent || '';
+      if (!text) return;
+      var done = function () {
+        var orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied \u2713';
+        setTimeout(function () { copyBtn.textContent = orig; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          // Fallback
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  }
+
+  // Ctrl/Cmd+Enter to submit from the textarea
+  taskEl.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      btnEl.click();
+    }
+  });
+})();
 </script>
 
 <script src="auto-update.js"></script>
