@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gstack Mastery Guide — From Zero to Pro</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232736;
+    --border: #2e3348;
+    --text: #e2e4ed;
+    --text-muted: #8b8fa3;
+    --accent: #7c6aef;
+    --accent-light: #9d8ff5;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── Navigation ── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+    transition: transform 0.3s ease;
+  }
+  .sidebar.collapsed { transform: translateX(-280px); }
+  .sidebar-logo {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo h2 {
+    font-size: 22px;
+    background: linear-gradient(135deg, var(--accent), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .sidebar-logo p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .nav-section {
+    padding: 8px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.15s;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+  .nav-link:hover, .nav-link.active {
+    color: var(--text);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+  .nav-link .icon { font-size: 16px; width: 22px; text-align: center; }
+
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 16px; left: 16px;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* ── Main content ── */
+  .main {
+    margin-left: 280px;
+    padding: 48px 56px 120px;
+    max-width: 960px;
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff, var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.7px;
+    margin: 56px 0 20px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--accent-light);
+  }
+  p { margin-bottom: 14px; color: var(--text); }
+  .muted { color: var(--text-muted); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 16px 0;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .card-header .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .badge-purple { background: rgba(124,106,239,0.15); color: var(--accent-light); }
+  .badge-orange { background: rgba(251,146,60,0.15); color: var(--orange); }
+  .badge-pink { background: rgba(244,114,182,0.15); color: var(--pink); }
+
+  .cmd {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--accent-light);
+    font-weight: 500;
+  }
+
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    color: var(--accent-light);
+  }
+
+  /* ── Skill reference cards ── */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .skill-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .skill-card .skill-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .skill-card .skill-name {
+    font-family: 'SF Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-light);
+  }
+  .skill-card .skill-role {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .skill-card .skill-desc {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    display: none;
+  }
+  .skill-card .skill-when {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--green);
+    display: none;
+  }
+  .skill-card .skill-example {
+    margin-top: 10px;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'SF Mono', monospace;
+    font-size: 13px;
+    color: var(--yellow);
+    display: none;
+  }
+  .skill-card.open .skill-desc,
+  .skill-card.open .skill-when,
+  .skill-card.open .skill-example { display: block; }
+  .skill-card .expand-icon {
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+  }
+  .skill-card.open .expand-icon { transform: rotate(45deg); }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .flow-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flow-arrow { color: var(--text-muted); font-size: 18px; }
+
+  /* ── Level progress ── */
+  .level-track {
+    display: flex;
+    gap: 0;
+    margin: 24px 0 32px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .level-seg {
+    flex: 1;
+    padding: 16px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-right: 1px solid var(--border);
+  }
+  .level-seg:last-child { border-right: none; }
+  .level-seg:hover { background: var(--surface2); }
+  .level-seg.active { background: var(--accent); }
+  .level-seg .level-num { font-size: 24px; font-weight: 800; }
+  .level-seg .level-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .level-seg.active .level-label { color: rgba(255,255,255,0.8); }
+
+  .level-content { display: none; }
+  .level-content.active { display: block; }
+
+  /* ── Tip boxes ── */
+  .tip {
+    border-left: 4px solid var(--green);
+    background: rgba(52,211,153,0.06);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 16px 0;
+  }
+  .tip-title { font-weight: 700; color: var(--green); margin-bottom: 6px; font-size: 14px; }
+
+  .warning {
+    border-left: 4px solid var(--yellow);
+    background: rgba(251,191,36,0.06);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 16px 0;
+  }
+  .warning-title { font-weight: 700; color: var(--yellow); margin-bottom: 6px; font-size: 14px; }
+
+  .danger {
+    border-left: 4px solid var(--red);
+    background: rgba(248,113,113,0.06);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 16px 0;
+  }
+  .danger-title { font-weight: 700; color: var(--red); margin-bottom: 6px; font-size: 14px; }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    margin: 20px 0 0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent-light); border-bottom-color: var(--accent); }
+  .tab-content { display: none; padding: 20px 0; }
+  .tab-content.active { display: block; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; margin: 12px 0; }
+  .checklist li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+  .checklist li.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .checklist li.checked span { text-decoration: line-through; color: var(--text-muted); }
+
+  /* ── Mental model diagram ── */
+  .mental-model {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .mm-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .mm-box .mm-icon { font-size: 32px; margin-bottom: 8px; }
+  .mm-box .mm-label { font-weight: 700; font-size: 15px; }
+  .mm-box .mm-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-280px); }
+    .sidebar.open { transform: translateX(0); }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
+    .main { margin-left: 0; padding: 80px 24px 120px; }
+    .mental-model { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+  }
+
+  /* ── Auto-update addon styles ── */
+  .gu-banner {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: #1a1d27;
+    border: 1px solid #7c6aef;
+    border-radius: 12px;
+    padding: 14px 18px;
+    max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    animation: gu-slide-in 0.35s ease;
+  }
+  @keyframes gu-slide-in {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .gu-banner-icon  { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+  .gu-banner-body  { flex: 1; min-width: 0; }
+  .gu-banner-title { font-weight: 700; font-size: 14px; color: #9d8ff5; margin-bottom: 4px; }
+  .gu-banner-text  { font-size: 13px; color: #8b8fa3; line-height: 1.55; margin: 0; }
+  .gu-banner-link  {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 14px;
+    background: #7c6aef;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .gu-banner-link:hover { opacity: 0.85; }
+  .gu-banner-close {
+    background: none;
+    border: none;
+    color: #8b8fa3;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .gu-banner-close:hover { color: #e2e4ed; }
+  .gu-github-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 24px 0;
+    padding: 8px 12px;
+    background: #232736;
+    border: 1px solid #2e3348;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #8b8fa3;
+    font-size: 13px;
+    font-weight: 500;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .gu-github-link:hover { border-color: #7c6aef; color: #e2e4ed; }
+  .gu-sidebar-meta {
+    padding: 10px 24px 0;
+    font-size: 11px;
+    color: #8b8fa3;
+    line-height: 1.7;
+  }
+  .gu-sidebar-meta a { color: #9d8ff5; text-decoration: none; }
+  .gu-sidebar-meta a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h2>gstack Guide</h2>
+    <p>Zero to Pro &middot; by Max</p>
+  </div>
+
+  <div class="nav-section">Foundations</div>
+  <a class="nav-link active" href="#what-is-gstack"><span class="icon">&#9733;</span> What is gstack?</a>
+  <a class="nav-link" href="#mental-model"><span class="icon">&#9881;</span> The Mental Model</a>
+  <a class="nav-link" href="#getting-started"><span class="icon">&#9654;</span> Getting Started</a>
+
+  <div class="nav-section">The Core Workflow</div>
+  <a class="nav-link" href="#phase-think"><span class="icon">&#128161;</span> Phase 1: Think</a>
+  <a class="nav-link" href="#phase-plan"><span class="icon">&#128203;</span> Phase 2: Plan</a>
+  <a class="nav-link" href="#phase-design"><span class="icon">&#127912;</span> Phase 3: Design</a>
+  <a class="nav-link" href="#phase-build"><span class="icon">&#128296;</span> Phase 4: Build</a>
+  <a class="nav-link" href="#phase-review"><span class="icon">&#128270;</span> Phase 5: Review</a>
+  <a class="nav-link" href="#phase-test"><span class="icon">&#9989;</span> Phase 6: Test</a>
+  <a class="nav-link" href="#phase-ship"><span class="icon">&#128640;</span> Phase 7: Ship</a>
+  <a class="nav-link" href="#phase-reflect"><span class="icon">&#128218;</span> Phase 8: Reflect</a>
+
+  <div class="nav-section">Power Tools</div>
+  <a class="nav-link" href="#safety"><span class="icon">&#128737;</span> Safety Guardrails</a>
+  <a class="nav-link" href="#browser"><span class="icon">&#127760;</span> Browser &amp; Browse</a>
+  <a class="nav-link" href="#learning"><span class="icon">&#129504;</span> Learning System</a>
+  <a class="nav-link" href="#parallel"><span class="icon">&#9889;</span> Parallel Work</a>
+
+  <div class="nav-section">Mastery</div>
+  <a class="nav-link" href="#skill-reference"><span class="icon">&#128209;</span> Full Skill Reference</a>
+  <a class="nav-link" href="#leveling-up"><span class="icon">&#127942;</span> Leveling Up</a>
+  <a class="nav-link" href="#prompting-tips"><span class="icon">&#128172;</span> Prompting Tips</a>
+  <a class="nav-link" href="#mistakes"><span class="icon">&#9888;</span> Common Mistakes</a>
+  <a class="nav-link" href="#checklist"><span class="icon">&#9745;</span> Mastery Checklist</a>
+</nav>
+
+<div class="main">
+
+  <!-- ============================================ -->
+  <!-- SECTION: What is gstack?                     -->
+  <!-- ============================================ -->
+  <section id="what-is-gstack">
+    <h1>gstack Mastery Guide</h1>
+    <p class="subtitle">A complete course to take you from "what's a slash command?" to running an entire virtual engineering team. No coding knowledge required.</p>
+
+    <h2>What is gstack?</h2>
+
+    <p>gstack is an open-source toolkit created by <strong>Garry Tan</strong> (CEO of Y Combinator) that turns Claude Code into a <strong>virtual software development team</strong>. Instead of one AI that does everything the same way, gstack gives you <strong>28+ specialized slash commands</strong> that each activate a different "role" — like switching between a CEO, a designer, an engineer, a QA tester, and a release manager.</p>
+
+    <p>Think of it this way: without gstack, asking Claude to build something is like hiring one person and saying "do everything." With gstack, it's like having a full team where each person has a clear job and they hand work off to each other in a structured sequence.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-purple">KEY INSIGHT</span>
+      </div>
+      <p>gstack doesn't add new AI capabilities. It adds <strong>structure, roles, and discipline</strong> to what Claude Code already can do. The same way a great process makes a team 10x more effective than a group of talented individuals working chaotically.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Mental Model                        -->
+  <!-- ============================================ -->
+  <section id="mental-model">
+    <h2>The Mental Model</h2>
+    <p>Before you touch any commands, internalize this: gstack follows the same cycle that real software teams use. Every feature, every bug fix, every product idea flows through these stages.</p>
+
+    <div class="mental-model">
+      <div class="mm-box" style="border-color: var(--pink);">
+        <div class="mm-icon">&#128161;</div>
+        <div class="mm-label">Think</div>
+        <div class="mm-sub">Sharpen the idea</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--blue);">
+        <div class="mm-icon">&#128203;</div>
+        <div class="mm-label">Plan</div>
+        <div class="mm-sub">Lock strategy &amp; architecture</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--accent);">
+        <div class="mm-icon">&#127912;</div>
+        <div class="mm-label">Design</div>
+        <div class="mm-sub">Visual system &amp; UI</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--green);">
+        <div class="mm-icon">&#128296;</div>
+        <div class="mm-label">Build</div>
+        <div class="mm-sub">Write the code</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--yellow);">
+        <div class="mm-icon">&#128270;</div>
+        <div class="mm-label">Review</div>
+        <div class="mm-sub">Catch bugs &amp; issues</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--orange);">
+        <div class="mm-icon">&#9989;</div>
+        <div class="mm-label">Test</div>
+        <div class="mm-sub">QA in a real browser</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--red);">
+        <div class="mm-icon">&#128640;</div>
+        <div class="mm-label">Ship</div>
+        <div class="mm-sub">Deploy &amp; release</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--text-muted);">
+        <div class="mm-icon">&#128218;</div>
+        <div class="mm-label">Reflect</div>
+        <div class="mm-sub">Retro &amp; learn</div>
+      </div>
+      <div class="mm-box" style="border-color: var(--green); background: rgba(52,211,153,0.05);">
+        <div class="mm-icon">&#128260;</div>
+        <div class="mm-label">Repeat</div>
+        <div class="mm-sub">Next iteration</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="tip-title">You don't always need every phase</div>
+      <p>Fixing a small bug? You might jump straight to Build &rarr; Review &rarr; Ship. Building a new product from scratch? Start from Think. gstack is a toolkit, not a prison — use what fits.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Getting Started                     -->
+  <!-- ============================================ -->
+  <section id="getting-started">
+    <h2>Getting Started</h2>
+
+    <h3>How to use slash commands</h3>
+    <p>Every gstack skill is activated by typing a <span class="cmd">/</span> followed by the command name inside Claude Code. You type these in the same place you'd type any message to Claude.</p>
+
+    <div class="code-block">
+/office-hours          &larr; type this and hit Enter
+    </div>
+
+    <p>Claude will then "become" that role. It'll change how it thinks, what it focuses on, and what questions it asks you. When you're done with that role, just invoke the next one.</p>
+
+    <h3>The two ways to run gstack</h3>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-green">OPTION A</span>
+        <strong>Step by step (recommended for learning)</strong>
+      </div>
+      <p>Call each skill manually in sequence. This gives you control and teaches you what each phase does.</p>
+      <div class="code-block">
+/office-hours       &larr; refine your idea<br>
+/plan-ceo-review    &larr; product strategy<br>
+/plan-eng-review    &larr; technical architecture<br>
+/review             &larr; code review<br>
+/qa                 &larr; test it<br>
+/ship               &larr; deploy it
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-yellow">OPTION B</span>
+        <strong>Autoplan (for when you know the flow)</strong>
+      </div>
+      <p>One command chains CEO &rarr; Design &rarr; Eng review automatically, pausing only for your approval at key decision points.</p>
+      <div class="code-block">/autoplan</div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 1 — Think                     -->
+  <!-- ============================================ -->
+  <section id="phase-think">
+    <h2>Phase 1: Think</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/office-hours</div>
+            <div class="skill-role">Role: Startup Advisor / Brainstorm Partner</div>
+          </div>
+          <span class="badge badge-pink">Think</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>This is where every new idea should start. gstack asks you <strong>6 forcing questions</strong> designed to cut through vague thinking and expose whether your idea has real demand. It has two modes:</p>
+          <p><strong>Startup mode</strong> — challenges you on demand reality, the status quo your users tolerate, how desperate users are for a solution, the narrowest possible wedge to start with, observations others have missed, and future-fit.</p>
+          <p><strong>Builder mode</strong> — for side projects, hackathons, and learning. More exploratory, less pressure-testing.</p>
+        </div>
+        <div class="skill-when">When to use: Every time you have a new product idea, feature concept, or are starting something from scratch.</div>
+        <div class="skill-example">
+          You: /office-hours<br>
+          You: "I want to build a tool that helps restaurants manage their waitlist via SMS"<br>
+          gstack: [asks 6 hard questions about demand, alternatives, specificity...]
+        </div>
+      </div>
+    </div>
+
+    <div class="warning">
+      <div class="warning-title">Don't skip this phase</div>
+      <p>The biggest mistake beginners make is jumping straight to "build me X." The /office-hours questions force you to think clearly about <em>what</em> you're building and <em>why</em> before any code gets written. It saves hours of building the wrong thing.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 2 — Plan                      -->
+  <!-- ============================================ -->
+  <section id="phase-plan">
+    <h2>Phase 2: Plan</h2>
+    <p>Planning in gstack happens from two perspectives: the product leader and the engineer. This dual review catches problems that a single perspective would miss.</p>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/plan-ceo-review</div>
+            <div class="skill-role">Role: Product CEO</div>
+          </div>
+          <span class="badge badge-blue">Plan</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Thinks like a product leader: "What's the 10-star version hiding inside this request?" Has <strong>4 modes</strong>:</p>
+          <p><strong>Expansion</strong> — go bigger, find the hidden opportunity<br>
+          <strong>Selective Expansion</strong> — expand some parts, hold others<br>
+          <strong>Hold Scope</strong> — keep it exactly as specified<br>
+          <strong>Reduction</strong> — cut it down to the absolute minimum viable version</p>
+          <p>Outputs a Markdown plan document that becomes the source of truth for what gets built.</p>
+        </div>
+        <div class="skill-when">When to use: After /office-hours, before any code is written. Also when scope is creeping and you need someone to challenge it.</div>
+        <div class="skill-example">You: /plan-ceo-review<br>gstack: "Let me review this plan as if I'm the CEO. Here's what I think the 10-star version looks like..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/plan-eng-review</div>
+            <div class="skill-role">Role: Staff Engineer</div>
+          </div>
+          <span class="badge badge-blue">Plan</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Locks down the <strong>technical architecture</strong>: data models, API structure, file organization, edge cases, error handling, and what tests need to be written. Produces architecture diagrams and a technical spec.</p>
+          <p>This is what prevents the "I built it but it's a mess" problem. The eng review creates a blueprint that the build phase follows.</p>
+        </div>
+        <div class="skill-when">When to use: After the CEO review approves the product direction. Before any implementation.</div>
+        <div class="skill-example">You: /plan-eng-review<br>gstack: "Here's my architecture recommendation: data flow, component structure, edge cases to handle..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/plan-design-review</div>
+            <div class="skill-role">Role: Senior Product Designer</div>
+          </div>
+          <span class="badge badge-blue">Plan</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Opens your live site and audits it the way a Stripe or Linear designer would — with immediate, opinionated visual reactions. Covers an <strong>80-item checklist</strong> across 10 categories: typography, spacing, hierarchy, color, responsive design, interaction states, motion, content quality, and <strong>AI Slop Detection</strong>.</p>
+          <p>Outputs two headline scores: <strong>Design Score</strong> and <strong>AI Slop Score</strong> (letter grades A–F). Also extracts your <strong>Inferred Design System</strong> from the live CSS — fonts, colors, spacing scale — and can save it as <span class="cmd">DESIGN.md</span>.</p>
+          <p><em>Report only — never touches your code.</em> Use <span class="cmd">/qa-design-review</span> when you want it to fix what it finds.</p>
+        </div>
+        <div class="skill-when">When to use: After building any UI. Catches AI slop patterns (purple gradients, 3-column icon grids, uniform border-radius) and visual hierarchy problems before you ship.</div>
+        <div class="skill-example">You: /plan-design-review https://myapp.com<br>gstack: "Design Score: C | AI Slop Score: D — 'The site communicates generic SaaS energy.' Top issue: gradient hero + 3-column icon grid. [Full report with 12 findings]"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/plan-devex-review</div>
+            <div class="skill-role">Role: Developer Experience Lead</div>
+          </div>
+          <span class="badge badge-blue">Plan</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Reviews your plan through a <strong>developer experience lens</strong>: API ergonomics, onboarding friction, documentation needs, tooling setup, and local dev workflow. Has multiple interactive modes to target specific DX concerns.</p>
+          <p>Catches problems that will slow down future developers (including yourself) before you've built the wrong thing.</p>
+        </div>
+        <div class="skill-when">When to use: When building APIs, SDKs, developer tools, or anything where DX is a first-class concern. Also valuable for internal tools where developer onboarding matters.</div>
+        <div class="skill-example">You: /plan-devex-review<br>gstack: "Reviewing from a DX perspective... The current API design requires 4 steps to authenticate. Let's talk about what a zero-friction first call looks like..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/autoplan</div>
+            <div class="skill-role">Role: Orchestrator</div>
+          </div>
+          <span class="badge badge-purple">Shortcut</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Chains <strong>CEO Review &rarr; Design Review &rarr; Eng Review</strong> automatically. Pauses at key decision points for your approval, so you stay in control without manually calling each command.</p>
+          <p>This is the "I trust the process, just run it" button for planning.</p>
+        </div>
+        <div class="skill-when">When to use: When you're comfortable with the planning flow and want to save time.</div>
+        <div class="skill-example">You: /autoplan<br>gstack: [runs CEO review, pauses for approval, runs design review, pauses, runs eng review]</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 3 — Design                    -->
+  <!-- ============================================ -->
+  <section id="phase-design">
+    <h2>Phase 3: Design</h2>
+    <p>gstack's design skills are one of its most powerful differentiators. They don't just suggest colors — they build complete design systems and generate real, production-quality HTML.</p>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/design-consultation</div>
+            <div class="skill-role">Role: Design Director</div>
+          </div>
+          <span class="badge badge-purple">Design</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Builds your <strong>design system from scratch</strong>: researches the competitive space, proposes a visual direction, defines typography, colors, spacing, component patterns, and creative risks. Outputs a <span class="cmd">DESIGN.md</span> file that becomes your design source of truth.</p>
+        </div>
+        <div class="skill-when">When to use: At the start of a new project, or when you need a coherent visual identity.</div>
+        <div class="skill-example">You: /design-consultation<br>gstack: "Let me research the space and propose a design system. What's the product and who's it for?"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/design-shotgun</div>
+            <div class="skill-role">Role: Visual Explorer</div>
+          </div>
+          <span class="badge badge-purple">Design</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Generates <strong>multiple visual variants</strong> side-by-side so you can compare directions. Instead of getting one design and tweaking it 50 times, you see 3-4 options at once and pick the best one.</p>
+        </div>
+        <div class="skill-when">When to use: When you're not sure what direction to go visually and want to explore options quickly.</div>
+        <div class="skill-example">You: /design-shotgun<br>You: "Show me 3 different hero section styles for a SaaS landing page"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/design-html</div>
+            <div class="skill-role">Role: Frontend Implementer</div>
+          </div>
+          <span class="badge badge-purple">Design</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Takes approved mockups/designs and generates <strong>production-quality, responsive HTML</strong> using Pretext or Tailwind. This bridges the gap between "what it should look like" and "actual working code."</p>
+        </div>
+        <div class="skill-when">When to use: After you've approved a design direction and want real, shippable HTML.</div>
+        <div class="skill-example">You: /design-html<br>gstack: "I'll convert the approved design into responsive HTML..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/design-review</div>
+            <div class="skill-role">Role: Design Critic</div>
+          </div>
+          <span class="badge badge-purple">Design</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Reviews existing designs or implementations for "AI slop" — generic, bland, cookie-cutter visual patterns that make everything look like it was made by AI. Catches consistency issues and visual hierarchy problems.</p>
+        </div>
+        <div class="skill-when">When to use: Before shipping any UI to make sure it doesn't look generic.</div>
+        <div class="skill-example">You: /design-review<br>gstack: "Let me review the current design for consistency, hierarchy, and originality..."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 4 — Build                     -->
+  <!-- ============================================ -->
+  <section id="phase-build">
+    <h2>Phase 4: Build</h2>
+    <p>This is where Claude Code writes the actual code. In gstack's flow, building happens <em>after</em> the plan and design are locked. The plans from earlier phases become the instructions Claude follows.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-green">HOW IT WORKS</span>
+      </div>
+      <p>You don't need a special slash command for building. Once your plans are set (from /plan-eng-review), you simply ask Claude to implement them:</p>
+      <div class="code-block">
+"Implement the user authentication feature according to the engineering plan"<br>
+"Build the landing page following DESIGN.md"<br>
+"Add the API endpoints from the architecture doc"
+      </div>
+      <p>Claude will reference the plan files that /plan-eng-review and /design-consultation created, and build against those specs rather than improvising.</p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-title">Why this matters for non-coders</div>
+      <p>Even if you can't read code, the planning phase created documents in plain English that describe what should be built. Claude follows those documents. Your job during the build phase is to make sure Claude is sticking to the plan — and if something seems off, ask "does this match the engineering plan?"</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 5 — Review                    -->
+  <!-- ============================================ -->
+  <section id="phase-review">
+    <h2>Phase 5: Review</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/review</div>
+            <div class="skill-role">Role: Senior Code Reviewer</div>
+          </div>
+          <span class="badge badge-yellow">Review</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>A thorough code review that looks for bugs, security issues, performance problems, edge cases, and style inconsistencies. It doesn't just point things out — it <strong>catches bugs that /ship then verifies are fixed</strong>.</p>
+          <p>Think of it as the "experienced developer looking over the junior developer's shoulder" step.</p>
+        </div>
+        <div class="skill-when">When to use: After any code has been written, before testing and shipping.</div>
+        <div class="skill-example">You: /review<br>gstack: "I'll review the recent changes. Found 3 issues: a potential null pointer, a missing error handler, and an N+1 query..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/cso</div>
+            <div class="skill-role">Role: Chief Security Officer</div>
+          </div>
+          <span class="badge badge-red">Security</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Runs a <strong>threat model</strong> on your code: injection attacks, authentication holes, data exposure, CSRF, XSS, and more. Thinks like a hacker trying to break your app.</p>
+        </div>
+        <div class="skill-when">When to use: Before shipping anything that handles user data, authentication, payments, or is publicly accessible.</div>
+        <div class="skill-example">You: /cso<br>gstack: "Running threat model... Found: API endpoint doesn't validate auth tokens, SQL injection possible in search..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/health</div>
+            <div class="skill-role">Role: Code Quality Inspector</div>
+          </div>
+          <span class="badge badge-yellow">Review</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>An overall code quality health check. Scans the codebase for technical debt, code smells, outdated dependencies, missing tests, and structural issues. Think of it as a routine checkup rather than a targeted review of recent changes.</p>
+        </div>
+        <div class="skill-when">When to use: Periodically to get a snapshot of overall code health, or before starting a new sprint to understand what needs the most attention.</div>
+        <div class="skill-example">You: /health<br>gstack: "Code health report: 3 files with high complexity, 2 outdated dependencies, test coverage at 61%. Priority issues: [list]..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/devex-review</div>
+            <div class="skill-role">Role: DX Auditor</div>
+          </div>
+          <span class="badge badge-yellow">Review</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>A <strong>live developer experience audit</strong> — runs real tests of your local dev setup, CLI tools, build process, and onboarding flow. Unlike /plan-devex-review (which reviews plans), this reviews actual running code and tools.</p>
+          <p>Tests the "getting started" journey from scratch, identifies friction points a new developer would hit, and suggests concrete fixes.</p>
+        </div>
+        <div class="skill-when">When to use: After building a tool, API, or SDK to verify the real-world DX matches the intended design. Also useful before open-sourcing or sharing with a new team.</div>
+        <div class="skill-example">You: /devex-review<br>gstack: "Running DX audit... Cloning repo... Running npm install... Found: 3 undocumented env variables are required before the app starts. Here's how to fix it..."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 6 — Test                      -->
+  <!-- ============================================ -->
+  <section id="phase-test">
+    <h2>Phase 6: Test</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/qa</div>
+            <div class="skill-role">Role: QA Lead</div>
+          </div>
+          <span class="badge badge-orange">Test</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>The breakthrough skill. /qa opens a <strong>real Chromium browser</strong>, navigates to your app, takes screenshots, clicks buttons, fills forms, and verifies things actually work. When it finds a bug, it doesn't just report it — it <strong>fixes the code, writes a regression test, and verifies the fix</strong>.</p>
+          <p>This was Garry Tan's "massive unlock" — Claude saying "I SEE THE ISSUE" and then actually fixing it live.</p>
+        </div>
+        <div class="skill-when">When to use: After /review has cleaned up the code. Before shipping.</div>
+        <div class="skill-example">You: /qa<br>gstack: "Opening browser... navigating to localhost:3000... Screenshot taken. Testing login flow... [clicks, types, verifies] Found: the signup button doesn't respond on mobile widths. Fixing..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/qa-only</div>
+            <div class="skill-role">Role: QA Tester (no fixes)</div>
+          </div>
+          <span class="badge badge-orange">Test</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Same as /qa but <strong>only reports issues without fixing them</strong>. Use this when you want a clean bug report without Claude modifying your code.</p>
+        </div>
+        <div class="skill-when">When to use: When you want a list of bugs but want to decide yourself how to handle them.</div>
+        <div class="skill-example">You: /qa-only<br>gstack: "Found 5 issues: [list with screenshots and reproduction steps]"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/qa-design-review</div>
+            <div class="skill-role">Role: Designer Who Codes</div>
+          </div>
+          <span class="badge badge-orange">Test</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Runs the same 80-item visual audit as <span class="cmd">/plan-design-review</span>, then <strong>fixes what it finds</strong>. For each design finding it locates the source file, makes the minimal CSS/styling change, commits with <code>style(design): FINDING-NNN</code>, re-navigates to verify, and takes before/after screenshots. One atomic commit per fix — fully bisectable.</p>
+          <p>CSS-only changes get a free pass. Changes to component JSX/TSX count against a risk budget. Hard cap at 30 fixes; if risk score exceeds 20% it stops and asks.</p>
+        </div>
+        <div class="skill-when">When to use: When /plan-design-review has flagged issues and you want them fixed automatically, not just reported.</div>
+        <div class="skill-example">You: /qa-design-review<br>gstack: "Design Score: C → B+ | AI Slop Score: D → A. 9 fixes applied (8 verified). style(design): FINDING-001 — replace 3-column icon grid with asymmetric layout..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/benchmark</div>
+            <div class="skill-role">Role: Performance Engineer</div>
+          </div>
+          <span class="badge badge-orange">Test</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Performance testing — measures load times, response times, memory usage, and identifies bottlenecks.</p>
+        </div>
+        <div class="skill-when">When to use: When you suspect performance issues or before launching to production.</div>
+        <div class="skill-example">You: /benchmark<br>gstack: "Running performance tests... API response time: 340ms (acceptable), but the dashboard page loads in 4.2s (too slow). The bottleneck is..."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 7 — Ship                      -->
+  <!-- ============================================ -->
+  <section id="phase-ship">
+    <h2>Phase 7: Ship</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/ship</div>
+            <div class="skill-role">Role: Release Manager</div>
+          </div>
+          <span class="badge badge-red">Ship</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Pushes your code as a pull request. Handles git operations, commit messages, PR descriptions. Verifies that review issues were actually fixed before allowing the push.</p>
+        </div>
+        <div class="skill-when">When to use: After /review and /qa have passed. This is the "go" button.</div>
+        <div class="skill-example">You: /ship<br>gstack: "Creating PR... All review issues resolved. PR created: #47 'Add user authentication'..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/land-and-deploy</div>
+            <div class="skill-role">Role: DevOps Engineer</div>
+          </div>
+          <span class="badge badge-red">Ship</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Merges the PR and deploys to production. Handles the actual deployment pipeline.</p>
+        </div>
+        <div class="skill-when">When to use: After the PR is approved and you're ready to go live.</div>
+        <div class="skill-example">You: /land-and-deploy<br>gstack: "Merging PR #47... Deploying to production... Deploy successful."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/canary</div>
+            <div class="skill-role">Role: Release Safety</div>
+          </div>
+          <span class="badge badge-red">Ship</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Monitors the deployment for errors after it goes live. Watches logs, error rates, and performance metrics to catch problems early.</p>
+        </div>
+        <div class="skill-when">When to use: Immediately after /land-and-deploy to make sure nothing broke in production.</div>
+        <div class="skill-example">You: /canary<br>gstack: "Monitoring deployment... Error rate: 0.1% (normal). No new exceptions. Deploy looks healthy."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/setup-deploy</div>
+            <div class="skill-role">Role: Deploy Configurator</div>
+          </div>
+          <span class="badge badge-red">Ship</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>One-time deployment pipeline configuration. Sets up the connection between your repository and your hosting platform so that /ship and /land-and-deploy work correctly for your project.</p>
+          <p>Guides you through selecting your hosting provider, configuring environment variables, and verifying the deploy pipeline end-to-end.</p>
+        </div>
+        <div class="skill-when">When to use: Once at the start of a new project, before you use /ship for the first time.</div>
+        <div class="skill-example">You: /setup-deploy<br>gstack: "What hosting provider are you using? [Vercel / Railway / Fly / AWS / other]... Configuring deployment pipeline..."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Phase 8 — Reflect                   -->
+  <!-- ============================================ -->
+  <section id="phase-reflect">
+    <h2>Phase 8: Reflect</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/retro</div>
+            <div class="skill-role">Role: Team Facilitator</div>
+          </div>
+          <span class="badge badge-green">Reflect</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Runs a retrospective on what just happened: what went well, what didn't, what to change. Stores learnings so future sessions benefit.</p>
+        </div>
+        <div class="skill-when">When to use: After completing a feature or sprint. Especially after something went wrong.</div>
+        <div class="skill-example">You: /retro<br>gstack: "Retrospective: The auth feature shipped in 2 sessions. What went well: clear plan prevented scope creep. What to improve: QA found 3 bugs that review should have caught..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/document-release</div>
+            <div class="skill-role">Role: Documentation Engineer</div>
+          </div>
+          <span class="badge badge-green">Reflect</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Generates release notes, changelogs, and documentation for what was shipped. Keeps your project's documentation up to date automatically.</p>
+        </div>
+        <div class="skill-when">When to use: After deploying, to keep a clean record of what changed and why.</div>
+        <div class="skill-example">You: /document-release<br>gstack: "Release v1.3.0 — Added: user authentication with OAuth, password reset flow. Fixed: mobile navigation bug..."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Safety Guardrails                   -->
+  <!-- ============================================ -->
+  <section id="safety">
+    <h2>Safety Guardrails</h2>
+    <p>These commands protect you from accidents. Especially important when you're not a coder and can't easily spot if Claude is about to do something destructive.</p>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/careful</div>
+            <div class="skill-role">Warns before destructive commands</div>
+          </div>
+          <span class="badge badge-red">Safety</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Activates warnings before any destructive operation: <span class="cmd">rm -rf</span> (delete everything), <span class="cmd">DROP TABLE</span> (destroy database), <span class="cmd">git reset --hard</span> (lose all changes), <span class="cmd">force-push</span> (overwrite remote code). Claude will stop and ask you to confirm before running these.</p>
+        </div>
+        <div class="skill-when">When to use: Always. Turn this on at the start of every session.</div>
+        <div class="skill-example">You: /careful<br>gstack: "Safety mode ON. I'll warn before any destructive operations."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/freeze</div>
+            <div class="skill-role">Locks edits to one directory</div>
+          </div>
+          <span class="badge badge-red">Safety</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Restricts all file edits to a <strong>single directory</strong>. If Claude tries to edit files outside that boundary, it's blocked. Essential when debugging — prevents Claude from "fixing" unrelated code while investigating a specific module.</p>
+        </div>
+        <div class="skill-when">When to use: When debugging a specific part of the code and you don't want Claude touching anything else.</div>
+        <div class="skill-example">You: /freeze src/auth<br>gstack: "Frozen. All edits restricted to src/auth/. Nothing else can be modified."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/guard</div>
+            <div class="skill-role">Activates both /careful + /freeze</div>
+          </div>
+          <span class="badge badge-red">Safety</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Combo command that turns on both safety guardrails at once. Maximum protection.</p>
+        </div>
+        <div class="skill-when">When to use: When working on critical/sensitive parts of the codebase.</div>
+        <div class="skill-example">You: /guard src/payments<br>gstack: "Guard mode ON. Careful warnings active + edits frozen to src/payments/"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/unfreeze</div>
+            <div class="skill-role">Removes the /freeze restriction</div>
+          </div>
+          <span class="badge badge-green">Safety</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Removes the directory lock so Claude can edit files anywhere again.</p>
+        </div>
+        <div class="skill-when">When to use: When you're done debugging and want Claude to have full access again.</div>
+        <div class="skill-example">You: /unfreeze<br>gstack: "Directory lock removed. I can now edit files anywhere."</div>
+      </div>
+    </div>
+
+    <div class="danger">
+      <div class="danger-title">Non-coder pro tip</div>
+      <p>If you don't understand what Claude is about to do, <strong>ask it to explain in plain English before you approve</strong>. "Explain what this command does and what could go wrong" is a perfectly valid and smart thing to say. Never approve something you don't understand.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Browser & Browse                    -->
+  <!-- ============================================ -->
+  <section id="browser">
+    <h2>Browser &amp; Browse</h2>
+    <p>gstack includes a built-in headless browser — a real Chromium instance that Claude can control to visit websites, take screenshots, click buttons, and test your app.</p>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/browse</div>
+            <div class="skill-role">Role: Browser Agent</div>
+          </div>
+          <span class="badge badge-blue">Browser</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Opens a persistent, high-performance Chromium session (~100-200ms per command). Claude can navigate pages, take screenshots, verify layouts, check console errors, and interact with web pages. Used by /qa under the hood.</p>
+        </div>
+        <div class="skill-when">When to use: For web research, testing your app, or any task that requires seeing a webpage.</div>
+        <div class="skill-example">You: /browse https://yourapp.com<br>gstack: "Opening browser... [screenshot] I can see the landing page. What should I check?"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/open-gstack-browser</div>
+            <div class="skill-role">Role: Browser Launcher</div>
+          </div>
+          <span class="badge badge-blue">Browser</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Launches gstack's AI-controlled Chromium browser with a <strong>visible sidebar agent</strong>. Unlike /browse (which is headless), this opens a browser window you can see — with Claude's controls visible in a sidebar next to the page.</p>
+          <p>Supports anti-bot stealth mode and can import cookies from your existing browser for authenticated sessions.</p>
+        </div>
+        <div class="skill-when">When to use: When you want to see the browser as Claude navigates it, or when working with sites that block headless browsers.</div>
+        <div class="skill-example">You: /open-gstack-browser<br>gstack: "Launching Chromium with sidebar agent... Browser open. Where should I navigate?"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/setup-browser-cookies</div>
+            <div class="skill-role">Browser Configuration</div>
+          </div>
+          <span class="badge badge-blue">Browser</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Initial setup for the cookie import feature. Run once to configure which browser to pull cookies from.</p>
+        </div>
+        <div class="skill-when">When to use: Once, during initial gstack setup.</div>
+        <div class="skill-example">You: /setup-browser-cookies<br>gstack: "Which browser do you use? [Chrome / Arc / Brave / Edge]"</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Learning System                     -->
+  <!-- ============================================ -->
+  <section id="learning">
+    <h2>Learning System</h2>
+    <p>gstack gets smarter over time. It stores patterns, preferences, and pitfalls specific to your project so it doesn't repeat mistakes.</p>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/learn</div>
+            <div class="skill-role">Role: Knowledge Manager</div>
+          </div>
+          <span class="badge badge-green">Learn</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Manage what gstack has learned across sessions. You can:</p>
+          <p><strong>Review</strong> — see all stored patterns<br>
+          <strong>Search</strong> — find specific learnings<br>
+          <strong>Prune</strong> — remove outdated or wrong learnings<br>
+          <strong>Export</strong> — save your learnings to share with others</p>
+          <p>This is how gstack avoids making the same mistake twice. After /retro captures learnings, /learn lets you manage them.</p>
+        </div>
+        <div class="skill-when">When to use: Periodically, to review and clean up what gstack has stored about your project.</div>
+        <div class="skill-example">You: /learn<br>gstack: "Here are 12 stored learnings: [1] Always use UTC timestamps in this project, [2] The auth module requires rate limiting..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/codex</div>
+            <div class="skill-role">Role: Codebase Librarian</div>
+          </div>
+          <span class="badge badge-green">Learn</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>A reference system for your codebase. Helps Claude understand and navigate your project's structure, conventions, and important files.</p>
+        </div>
+        <div class="skill-when">When to use: When starting work on an existing project, or when Claude seems confused about your codebase structure.</div>
+        <div class="skill-example">You: /codex<br>gstack: "Scanning codebase... Found: React frontend in /src, Express API in /api, shared types in /shared..."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/gstack-upgrade</div>
+            <div class="skill-role">Role: Self-Updater</div>
+          </div>
+          <span class="badge badge-green">Learn</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Upgrades gstack to the latest version. Fetches updates from the official repository, applies them to your local install, and reports what changed.</p>
+          <p>Run this periodically to get new skills, bug fixes, and improvements as the project evolves.</p>
+        </div>
+        <div class="skill-when">When to use: Whenever you want to pull the latest gstack improvements, or when you see a reference to a command you don't have yet.</div>
+        <div class="skill-example">You: /gstack-upgrade<br>gstack: "Checking for updates... Found v1.4.2 (you have v1.3.1). Upgrading... Done. New skills added: /devex-review, /pair-agent."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Parallel Work                       -->
+  <!-- ============================================ -->
+  <section id="parallel">
+    <h2>Parallel Work (Advanced)</h2>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/investigate</div>
+            <div class="skill-role">Role: Detective</div>
+          </div>
+          <span class="badge badge-yellow">Utility</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Deep-dive investigation into a specific issue or module. Automatically freezes to the module being investigated so Claude doesn't accidentally change unrelated code while digging into a problem.</p>
+        </div>
+        <div class="skill-when">When to use: When something is broken and you need Claude to figure out why without touching other things.</div>
+        <div class="skill-example">You: /investigate "Why is the payment webhook failing?"<br>gstack: "Auto-freezing to src/webhooks... Investigating... Found: the Stripe signature validation is using the wrong key."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/checkpoint</div>
+            <div class="skill-role">Role: State Manager</div>
+          </div>
+          <span class="badge badge-green">Utility</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Saves the current state of your work so you can safely pause and resume later. Documents what's been completed, what's in progress, and what comes next — giving the next session full context to pick up exactly where you left off.</p>
+        </div>
+        <div class="skill-when">When to use: Before ending a session mid-task, switching context, or handing work to a new session.</div>
+        <div class="skill-example">You: /checkpoint<br>gstack: "Saving progress... Completed: auth UI. In progress: API integration (50% done). Next: wire up login form to /api/auth endpoint."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/pair-agent</div>
+            <div class="skill-role">Role: Multi-Agent Coordinator</div>
+          </div>
+          <span class="badge badge-pink">Think</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Enables <strong>cross-vendor browser sharing</strong> — lets multiple AI agents (Claude, GPT-4, Gemini, etc.) share the same browser session. One agent can hand off a browser context to another without losing state.</p>
+          <p>Powers advanced multi-agent workflows where different AI models collaborate on the same task, each contributing what they're best at.</p>
+        </div>
+        <div class="skill-when">When to use: Advanced workflows where you want multiple AI models to collaborate, or when you need to delegate browser tasks to a different agent mid-session.</div>
+        <div class="skill-example">You: /pair-agent<br>gstack: "Sharing browser session... Agent handoff ready. Which agent should take over?"</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-purple">CONDUCTOR</span>
+        <strong>Parallel Multi-Session Work</strong>
+      </div>
+      <p>Conductor is gstack's advanced orchestration tool that runs <strong>multiple Claude Code sessions in parallel</strong>, each in an isolated workspace. Imagine 4 developers working simultaneously:</p>
+      <p>Session 1: implementing Feature A<br>
+      Session 2: running QA on Feature B<br>
+      Session 3: doing a code review on Feature C<br>
+      Session 4: investigating a production bug</p>
+      <p>This is power-user territory. Start with single sessions first and graduate to Conductor when you're comfortable with the core workflow.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Full Skill Reference                -->
+  <!-- ============================================ -->
+  <section id="skill-reference">
+    <h2>Full Skill Reference</h2>
+    <p>Every gstack command in one place. Click any to expand.</p>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-think')">Think &amp; Plan</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-design')">Design</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-build')">Build &amp; Review</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-ship')">Ship &amp; Ops</button>
+    </div>
+
+    <div id="tab-think" class="tab-content active">
+      <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0; width: 200px;"><span class="cmd">/office-hours</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">6 forcing questions to sharpen your idea</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/plan-ceo-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Product strategy review (4 scope modes)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/plan-design-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">UX and interaction review of plans</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/plan-eng-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Lock architecture, data flow, edge cases</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/plan-devex-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Review plan for developer experience and API ergonomics</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0;"><span class="cmd">/autoplan</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Chain all 3 reviews automatically</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="tab-design" class="tab-content">
+      <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0; width: 220px;"><span class="cmd">/design-consultation</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Build design system from scratch</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/design-shotgun</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Generate multiple visual variants to compare</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/design-html</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Convert designs to production HTML</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0;"><span class="cmd">/design-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Catch "AI slop" and design inconsistencies</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="tab-build" class="tab-content">
+      <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0; width: 200px;"><span class="cmd">/review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Senior code review for bugs &amp; issues</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/cso</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Security threat model</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/qa</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Full QA with real browser, auto-fixes bugs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/qa-only</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">QA report only, no auto-fixes</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/qa-design-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Visual design audit + auto-fixes (AI slop, typography, spacing)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/benchmark</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Performance testing</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/investigate</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Deep-dive with auto-freeze</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/health</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Overall code quality health check</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0;"><span class="cmd">/devex-review</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Live DX audit — tests real onboarding and dev workflow</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="tab-ship" class="tab-content">
+      <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0; width: 220px;"><span class="cmd">/ship</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Create PR and push</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/land-and-deploy</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Merge PR and deploy to production</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/canary</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Post-deploy monitoring</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/setup-deploy</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Configure deployment pipeline</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/retro</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Sprint retrospective</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/document-release</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Generate release notes &amp; docs</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/learn</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Manage stored project learnings</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/codex</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Codebase reference system</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/checkpoint</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Save progress to resume later</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/gstack-upgrade</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Update gstack to latest version</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 12px 0;"><span class="cmd">/pair-agent</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Share browser session across multiple AI agents</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0;"><span class="cmd">/open-gstack-browser</span></td>
+          <td style="padding: 12px 0; color: var(--text-muted);">Launch visible Chromium with sidebar agent</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Leveling Up                         -->
+  <!-- ============================================ -->
+  <section id="leveling-up">
+    <h2>Leveling Up: Your Path to Pro</h2>
+
+    <div class="level-track">
+      <div class="level-seg active" onclick="switchLevel(1)">
+        <div class="level-num">1</div>
+        <div class="level-label">Beginner</div>
+      </div>
+      <div class="level-seg" onclick="switchLevel(2)">
+        <div class="level-num">2</div>
+        <div class="level-label">Intermediate</div>
+      </div>
+      <div class="level-seg" onclick="switchLevel(3)">
+        <div class="level-num">3</div>
+        <div class="level-label">Advanced</div>
+      </div>
+      <div class="level-seg" onclick="switchLevel(4)">
+        <div class="level-num">4</div>
+        <div class="level-label">Pro</div>
+      </div>
+    </div>
+
+    <div id="level-1" class="level-content active">
+      <h3>Level 1: Beginner (Week 1-2)</h3>
+      <p><strong>Goal:</strong> Understand the flow and get comfortable with the core commands.</p>
+      <div class="card">
+        <p><strong>Practice this loop:</strong></p>
+        <div class="flow">
+          <span class="flow-step" style="background: rgba(244,114,182,0.15); color: var(--pink);">/office-hours</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(96,165,250,0.15); color: var(--blue);">/plan-ceo-review</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(96,165,250,0.15); color: var(--blue);">/plan-eng-review</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,191,36,0.15); color: var(--yellow);">/review</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(248,113,113,0.15); color: var(--red);">/ship</span>
+        </div>
+        <p>Start with <span class="cmd">/careful</span> at the beginning of every session. Don't skip it.</p>
+        <p>Focus on <strong>answering gstack's questions thoughtfully</strong>. The quality of what gets built depends on the quality of your answers in /office-hours and /plan-ceo-review.</p>
+      </div>
+    </div>
+
+    <div id="level-2" class="level-content">
+      <h3>Level 2: Intermediate (Week 3-4)</h3>
+      <p><strong>Goal:</strong> Add design and QA to your workflow.</p>
+      <div class="card">
+        <p><strong>Expanded loop:</strong></p>
+        <div class="flow">
+          <span class="flow-step" style="background: rgba(244,114,182,0.15); color: var(--pink);">/office-hours</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(124,106,239,0.15); color: var(--accent-light);">/autoplan</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(124,106,239,0.15); color: var(--accent-light);">/design-consultation</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">Build</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,191,36,0.15); color: var(--yellow);">/review</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,146,60,0.15); color: var(--orange);">/qa</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(248,113,113,0.15); color: var(--red);">/ship</span>
+        </div>
+        <p>Start using <span class="cmd">/autoplan</span> instead of calling each plan review manually.</p>
+        <p>Add <span class="cmd">/qa</span> to catch bugs Claude's code review missed.</p>
+        <p>Try <span class="cmd">/freeze</span> when debugging — notice how it prevents Claude from wandering.</p>
+      </div>
+    </div>
+
+    <div id="level-3" class="level-content">
+      <h3>Level 3: Advanced (Month 2)</h3>
+      <p><strong>Goal:</strong> Use the full toolkit including security, performance, and learning.</p>
+      <div class="card">
+        <p><strong>Full workflow:</strong></p>
+        <div class="flow">
+          <span class="flow-step" style="background: rgba(244,114,182,0.15); color: var(--pink);">/office-hours</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(124,106,239,0.15); color: var(--accent-light);">/autoplan</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(124,106,239,0.15); color: var(--accent-light);">/design-shotgun</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(124,106,239,0.15); color: var(--accent-light);">/design-html</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">Build</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,191,36,0.15); color: var(--yellow);">/review</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(248,113,113,0.15); color: var(--red);">/cso</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,146,60,0.15); color: var(--orange);">/qa</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(251,146,60,0.15); color: var(--orange);">/benchmark</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(248,113,113,0.15); color: var(--red);">/ship</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background: rgba(52,211,153,0.15); color: var(--green);">/retro</span>
+        </div>
+        <p>Add <span class="cmd">/cso</span> for security reviews on anything user-facing.</p>
+        <p>Use <span class="cmd">/benchmark</span> to catch performance issues before users do.</p>
+        <p>Run <span class="cmd">/retro</span> after each sprint and <span class="cmd">/learn</span> to manage accumulated knowledge.</p>
+      </div>
+    </div>
+
+    <div id="level-4" class="level-content">
+      <h3>Level 4: Pro (Month 3+)</h3>
+      <p><strong>Goal:</strong> Run parallel sessions and customize gstack to your workflow.</p>
+      <div class="card">
+        <p><strong>Pro patterns:</strong></p>
+        <p>Use <strong>Conductor</strong> to run multiple features in parallel across isolated sessions.</p>
+        <p>Customize the learning system with <span class="cmd">/learn</span> to encode your project's specific patterns.</p>
+        <p>Use <span class="cmd">/open-gstack-browser</span> and <span class="cmd">/setup-browser-cookies</span> to test authenticated flows.</p>
+        <p>Chain <span class="cmd">/canary</span> after deploys to catch production issues instantly.</p>
+        <p>Run <span class="cmd">/investigate</span> for surgical debugging without breaking unrelated code.</p>
+        <p>Use <span class="cmd">/design-shotgun</span> as a rapid exploration tool, not just for final designs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Prompting Tips                      -->
+  <!-- ============================================ -->
+  <section id="prompting-tips">
+    <h2>Prompting Tips for Non-Coders</h2>
+    <p>Your skill as a gstack user comes down to how well you communicate with Claude. Here's how to get better results.</p>
+
+    <div class="card">
+      <h3 style="margin-top: 0;">1. Be specific about the outcome, not the implementation</h3>
+      <div class="code-block" style="color: var(--red);">
+BAD:  "Make me a React app with a Postgres database and REST API"<br>
+      (You're prescribing solutions you don't understand)
+      </div>
+      <div class="code-block" style="color: var(--green);">
+GOOD: "I need a web app where restaurant owners can manage their<br>
+       waitlist. Customers join via a link, owners see the queue<br>
+       in real time, and customers get an SMS when it's their turn."<br>
+      (You're describing the problem and the user experience)
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0;">2. Answer gstack's questions with real-world context</h3>
+      <p>When /office-hours asks "who is desperate for this?", don't say "restaurant owners." Say "small restaurant owners in busy neighborhoods who currently use a paper clipboard and lose 20% of their waitlist because people leave without being called." The more specific, the better the output.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0;">3. Challenge Claude — don't just accept everything</h3>
+      <p>If Claude proposes something that doesn't feel right, push back. Say "I don't think that's right because..." or "That seems overcomplicated, can we simplify?" Claude works best when you treat it like a smart colleague, not an oracle.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0;">4. Use these magic phrases</h3>
+      <div class="code-block">
+"Explain what you're about to do in plain English before doing it"<br><br>
+"What could go wrong with this approach?"<br><br>
+"Is there a simpler way to do this?"<br><br>
+"Walk me through this like I'm not a developer"<br><br>
+"What assumptions are you making?"<br><br>
+"Before you write code, summarize the plan in bullet points"
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top: 0;">5. Iterate in small steps</h3>
+      <p>Don't ask for an entire app in one message. Build one piece, verify it works (/qa), then build the next piece. Small iterations catch problems early and prevent massive rework.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Common Mistakes                     -->
+  <!-- ============================================ -->
+  <section id="mistakes">
+    <h2>Common Mistakes</h2>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Skipping /office-hours</h3>
+      <p>Jumping straight to "build me X" is the #1 mistake. You end up building the wrong thing faster. The 10 minutes you spend in /office-hours save hours of rework.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Approving things you don't understand</h3>
+      <p>When Claude asks "should I proceed?", never say yes to something you can't explain in your own words. Ask "explain what this means" first. There's no shame in that — it's the smart move.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Skipping /review and /qa</h3>
+      <p>Code that hasn't been reviewed and tested is code you'll regret shipping. These steps exist because AI-generated code frequently has subtle bugs. Always review, always test.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Not using /careful</h3>
+      <p>Without /careful, Claude can run destructive commands without warning. One accidental <span class="cmd">rm -rf</span> can delete your entire project. Always start with /careful.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Trying to do too much at once</h3>
+      <p>Building an entire app in one Claude session leads to context overload. Break your project into small features, build each one through the full Think &rarr; Ship cycle, then move to the next.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--red);">
+      <h3 style="margin-top: 0; color: var(--red);">Ignoring /retro and /learn</h3>
+      <p>These aren't optional nice-to-haves. They're what make gstack get better over time. Skip them and you repeat the same mistakes. Use them and each session is better than the last.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: Mastery Checklist                   -->
+  <!-- ============================================ -->
+  <section id="checklist">
+    <h2>Mastery Checklist</h2>
+    <p>Track your progress. Click each item as you complete it.</p>
+
+    <h3>Foundations</h3>
+    <ul class="checklist" id="cl-foundations">
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Ran /office-hours and answered all 6 questions for a real idea</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Completed a full /plan-ceo-review cycle with at least one scope mode</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Ran /plan-eng-review and read the architecture output</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /careful at session start (and made it a habit)</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Had Claude build something and ran /review on it</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /ship to push a real PR</span></li>
+    </ul>
+
+    <h3>Intermediate</h3>
+    <ul class="checklist" id="cl-intermediate">
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /autoplan to run the full planning flow automatically</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Ran /design-consultation and got a DESIGN.md</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /qa and watched Claude test in a real browser</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /freeze during a debugging session</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Pushed back on Claude's suggestion and got a better result</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Completed a full Think &rarr; Ship cycle for one feature</span></li>
+    </ul>
+
+    <h3>Advanced</h3>
+    <ul class="checklist" id="cl-advanced">
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /design-shotgun to compare multiple visual directions</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Ran /cso and fixed security issues it found</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /benchmark to find and fix performance issues</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Ran /retro and reviewed the learnings with /learn</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /open-gstack-browser or /setup-browser-cookies to test authenticated pages</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /investigate for a targeted debugging session</span></li>
+    </ul>
+
+    <h3>Pro</h3>
+    <ul class="checklist" id="cl-pro">
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used Conductor to run parallel Claude sessions</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Shipped a multi-feature release using the full gstack workflow</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Curated /learn entries and exported project patterns</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Used /canary to monitor a production deploy</span></li>
+      <li onclick="this.classList.toggle('checked')"><div class="check-box"></div><span>Built and shipped something you couldn't have built without gstack</span></li>
+    </ul>
+  </section>
+
+  <div style="margin-top: 80px; padding: 32px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); text-align: center;">
+    <p style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">You've reached the end.</p>
+    <p style="color: var(--text-muted); margin: 0;">Now go use <span class="cmd">/office-hours</span> on something real. That's where mastery begins.</p>
+  </div>
+
+</div>
+
+<script>
+  // Tab switching
+  function switchTab(e, tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  // Level switching
+  function switchLevel(n) {
+    document.querySelectorAll('.level-seg').forEach((s, i) => {
+      s.classList.toggle('active', i === n - 1);
+    });
+    document.querySelectorAll('.level-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('level-' + n).classList.add('active');
+  }
+
+  // Active nav highlighting
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = entry.target.id;
+        const link = document.querySelector(`.nav-link[href="#${id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -80% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Close mobile nav
+      document.querySelector('.sidebar').classList.remove('open');
+    });
+  });
+
+  // Checklist persistence (in-memory only)
+  document.querySelectorAll('.checklist li').forEach(li => {
+    li.addEventListener('click', function() {
+      const box = this.querySelector('.check-box');
+      box.textContent = this.classList.contains('checked') ? '✓' : '';
+    });
+  });
+</script>
+
+<script>
+  // ── Auto-update: inject sidebar metadata + GitHub link ────────────────────────
+  (function () {
+    'use strict';
+
+    const CANONICAL_URL = 'https://mwonka.github.io/gstack-mastery-guide/gstack-mastery-guide.html';
+    const GITHUB_REPO   = 'https://github.com/mwonka/gstack-mastery-guide';
+    const GUIDE_VERSION = '1.3';
+    const LAST_UPDATED  = 'April 2026';
+
+    // Inject version info + GitHub link into sidebar
+    const sidebarLogo = document.querySelector('.sidebar-logo');
+    if (sidebarLogo) {
+      const meta = document.createElement('div');
+      meta.className = 'gu-sidebar-meta';
+      meta.innerHTML =
+        'v' + GUIDE_VERSION + ' &middot; Updated ' + LAST_UPDATED + '<br>' +
+        '<a href="' + CANONICAL_URL + '" target="_blank">View live version &rarr;</a>';
+      sidebarLogo.after(meta);
+
+      const ghLink = document.createElement('a');
+      ghLink.className = 'gu-github-link';
+      ghLink.href = GITHUB_REPO;
+      ghLink.target = '_blank';
+      ghLink.rel = 'noopener';
+      ghLink.innerHTML =
+        '<svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" style="flex-shrink:0">' +
+        '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57' +
+        ' 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41' +
+        '-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815' +
+        ' 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925' +
+        ' 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23' +
+        ' .96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65' +
+        ' .24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925' +
+        ' .435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57' +
+        ' A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>' +
+        '</svg> &#11088; Star on GitHub';
+      meta.after(ghLink);
+    }
+
+    // Show "outdated copy" banner when not on canonical URL
+    const loc = window.location.href;
+    const isCanonical = CANONICAL_URL !== 'https://YOUR-USERNAME.github.io/gstack-mastery-guide/'
+                        && loc.startsWith(CANONICAL_URL);
+    const isDev = loc.includes('localhost') || loc.includes('127.0.0.1');
+    const isFileProt = window.location.protocol === 'file:';
+
+    if (!isCanonical && !isDev) {
+      const linkText = isFileProt
+        ? 'This is a locally saved file — it may be out of date.'
+        : 'You may be viewing an older cached copy of this guide.';
+
+      const banner = document.createElement('div');
+      banner.className = 'gu-banner';
+      banner.id = 'guUpdateBanner';
+      banner.innerHTML =
+        '<span class="gu-banner-icon">&#128260;</span>' +
+        '<div class="gu-banner-body">' +
+          '<div class="gu-banner-title">Always-fresh version available</div>' +
+          '<p class="gu-banner-text">' + linkText + '</p>' +
+          '<a class="gu-banner-link" href="' + CANONICAL_URL + '" target="_blank">View latest version &rarr;</a>' +
+        '</div>' +
+        '<button class="gu-banner-close" onclick="this.closest(\'.gu-banner\').remove()" aria-label="Dismiss">&#10005;</button>';
+
+      document.body.appendChild(banner);
+
+      setTimeout(function () {
+        var el = document.getElementById('guUpdateBanner');
+        if (el) {
+          el.style.transition = 'opacity 0.5s';
+          el.style.opacity = '0';
+          setTimeout(function () { el.remove(); }, 500);
+        }
+      }, 15000);
+    }
+  })();
+</script>
+
+<script src="auto-update.js"></script>
+</body>
+</html>
