@@ -654,6 +654,7 @@
   <a class="nav-link" href="#phase-test"><span class="icon">&#9989;</span> Phase 6: Test</a>
   <a class="nav-link" href="#phase-ship"><span class="icon">&#128640;</span> Phase 7: Ship</a>
   <a class="nav-link" href="#phase-reflect"><span class="icon">&#128218;</span> Phase 8: Reflect</a>
+  <a class="nav-link" href="#gbrain"><span class="icon">&#129504;</span> GBrain (Memory)</a>
 
   <div class="nav-section">Power Tools</div>
   <a class="nav-link" href="#safety"><span class="icon">&#128737;</span> Safety Guardrails</a>
@@ -1051,26 +1052,29 @@
           <span class="expand-icon">+</span>
         </div>
         <div class="skill-desc">
-          <p>Takes approved mockups/designs and generates <strong>production-quality, responsive HTML</strong> using Pretext or Tailwind. This bridges the gap between "what it should look like" and "actual working code."</p>
+          <p>Takes approved mockups, CEO plans, design reviews, or a from-scratch brief and generates <strong>production-quality Pretext-native HTML</strong>. Text reflows on resize, heights adjust to content, and the skill auto-routes to the right API per design type.</p>
+          <p>Includes <strong>framework detection</strong> — if your project is React, Svelte, or Vue, it emits idiomatic component code instead of raw HTML.</p>
         </div>
-        <div class="skill-when">When to use: After you've approved a design direction and want real, shippable HTML.</div>
-        <div class="skill-example">You: /design-html<br>gstack: "I'll convert the approved design into responsive HTML..."</div>
+        <div class="skill-when">When to use: After you've approved a design direction and want real, shippable code in your project's framework.</div>
+        <div class="skill-example">You: /design-html<br>gstack: "Detected Next.js + Tailwind. Converting approved hero to a responsive React component..."</div>
       </div>
 
       <div class="skill-card" onclick="this.classList.toggle('open')">
         <div class="skill-top">
           <div>
             <div class="skill-name">/design-review</div>
-            <div class="skill-role">Role: Design Critic</div>
+            <div class="skill-role">Role: Designer-Who-Codes</div>
           </div>
           <span class="badge badge-purple">Design</span>
           <span class="expand-icon">+</span>
         </div>
         <div class="skill-desc">
-          <p>Reviews existing designs or implementations for "AI slop" — generic, bland, cookie-cutter visual patterns that make everything look like it was made by AI. Catches consistency issues and visual hierarchy problems.</p>
+          <p><strong>Live-site visual audit + fix loop.</strong> Runs the same 80-item audit as <span class="cmd">/plan-design-review</span> (typography, spacing, hierarchy, color, AI Slop Detection), then enters a fix loop: locates the source file for each finding, makes the minimal CSS change, and commits with <span class="cmd">style(design): FINDING-NNN</span>.</p>
+          <p>One commit per fix, before/after screenshots, fully bisectable. CSS-only changes get a free pass; component JSX edits count against a self-regulation risk budget (hard cap 30 fixes).</p>
+          <p><em>Note:</em> the current upstream skill that fixes design issues. The older <span class="cmd">/qa-design-review</span> name is the legacy alias — both folders may co-exist transitionally.</p>
         </div>
-        <div class="skill-when">When to use: Before shipping any UI to make sure it doesn't look generic.</div>
-        <div class="skill-example">You: /design-review<br>gstack: "Let me review the current design for consistency, hierarchy, and originality..."</div>
+        <div class="skill-when">When to use: After <span class="cmd">/plan-design-review</span> surfaces issues you actually want fixed in code, not just listed.</div>
+        <div class="skill-example">You: /design-review https://myapp.com<br>gstack: "Design Score C → B+ | AI Slop Score D → A. 9 fixes applied across 9 atomic commits. Before/after screenshots in .gstack/design-reports/."</div>
       </div>
     </div>
   </section>
@@ -1363,6 +1367,71 @@
         <div class="skill-when">When to use: After deploying, to keep a clean record of what changed and why.</div>
         <div class="skill-example">You: /document-release<br>gstack: "Release v1.3.0 — Added: user authentication with OAuth, password reset flow. Fixed: mobile navigation bug..."</div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SECTION: GBrain — Persistent Memory          -->
+  <!-- ============================================ -->
+  <section id="gbrain">
+    <h2>GBrain — Persistent Memory</h2>
+    <p><strong>GBrain</strong> is gstack's persistent knowledge base for AI agents. It stores what your agent learns, what you've decided, what worked, and what didn't — and lets the agent search all of it on demand. Without GBrain, every new session starts cold. With it, yesterday's learning on machine A surfaces in today's session on machine B.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="badge badge-green">HOW IT FITS THE FLOW</span>
+      </div>
+      <p>GBrain sits underneath every other skill. <span class="cmd">/learn</span> writes session-scoped notes; GBrain promotes them to durable, searchable memory. <span class="cmd">/retro</span> pulls cross-machine history when sync is on. <span class="cmd">/health</span> includes a GBrain dimension (doctor status, sync queue depth, last-push age) in its composite score.</p>
+      <p>Three deployment paths: <strong>Supabase (cloud, shareable across teammates and machines)</strong>, <strong>auto-provisioned Supabase (one-command project creation)</strong>, or <strong>PGLite (local-only, zero network, ~30s setup)</strong>.</p>
+    </div>
+
+    <div class="skill-grid">
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/setup-gbrain</div>
+            <div class="skill-role">Role: Memory Architect</div>
+          </div>
+          <span class="badge badge-green">Meta</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>One command from zero to "GBrain is running and my agent can call it." Detects current state, asks at most three questions, walks through install, init, MCP registration for Claude Code, and per-repo trust policy.</p>
+          <p><strong>Per-remote trust triad:</strong> every repo gets a policy — <span class="cmd">read-write</span> (search + write back), <span class="cmd">read-only</span> (search but never contaminate), or <span class="cmd">deny</span>. Set once per repo, sticky across worktrees and branches. Critical for multi-client consultants who don't want Client A's code leaking into Client B's brain.</p>
+          <p>Sub-flags: <span class="cmd">--switch</span> (migrate PGLite ↔ Supabase, lossless), <span class="cmd">--repo</span> (re-prompt trust policy for current repo), <span class="cmd">--cleanup-orphans</span> (delete abandoned Supabase projects), <span class="cmd">--resume-provision &lt;ref&gt;</span> (recover from interrupted provision).</p>
+        </div>
+        <div class="skill-when">When to use: Once per machine. Re-run with <span class="cmd">--switch</span> if you want to move from local PGLite to a shared cloud brain.</div>
+        <div class="skill-example">You: /setup-gbrain<br>gstack: "Where should your brain live? 1) Supabase (paste URL) 2) Auto-provision Supabase 3) PGLite local. Pick one..."</div>
+        <div class="skill-when" style="margin-top:8px;"><strong>Flow + combines with:</strong> Prerequisite for cross-machine memory. Pair with <span class="cmd">gstack-brain-init</span> (machine-local gstack memory sync) for full persistence. <span class="cmd">/retro</span> and <span class="cmd">/health</span> automatically pick it up once configured.</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">gstack-brain-init / -restore / -sync / -uninstall</div>
+            <div class="skill-role">Role: GStack Memory Sync (CLI)</div>
+          </div>
+          <span class="badge badge-green">Meta</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Terminal-level controls for syncing your <span class="cmd">~/.gstack/</span> state (learnings, plans, retros, design docs, developer profile) to a private git repo. Different from GBrain itself — this is the <em>gstack memory layer</em> that becomes indexable by GBrain when both are on.</p>
+          <p><span class="cmd">gstack-brain-init</span> — turns <span class="cmd">~/.gstack/</span> into a git repo, pushes initial commit, writes the URL-only marker file (safe to copy between machines).</p>
+          <p><span class="cmd">gstack-brain-restore</span> — on a new machine, after copying <span class="cmd">~/.gstack-brain-remote.txt</span> over, this clones and rehydrates everything.</p>
+          <p><span class="cmd">gstack-brain-sync --status</span> — last successful push, pending queue depth, sync blocks, current privacy mode.</p>
+          <p><span class="cmd">gstack-brain-uninstall</span> — removes <span class="cmd">.git</span> and <span class="cmd">.brain-*</span> config; <strong>never touches your learnings, plans, or retros</strong>. Add <span class="cmd">--delete-remote</span> to also delete the private GitHub repo.</p>
+          <p><strong>Privacy modes:</strong> <span class="cmd">off</span>, <span class="cmd">artifacts-only</span> (plans + designs + retros + learnings, skip behavioral data), <span class="cmd">full</span> (everything in the allowlist). Set with <span class="cmd">gstack-config set gbrain_sync_mode &lt;mode&gt;</span>.</p>
+          <p><strong>Secret protection:</strong> every commit is scanned before leaving your machine — AWS keys, GitHub tokens, OpenAI keys, PEM blocks, JWTs, and bearer tokens are all blocked. If a scan hits, sync stops and the queue is preserved.</p>
+        </div>
+        <div class="skill-when">When to use: Run <span class="cmd">gstack-brain-init</span> on the machine you work on most. Run <span class="cmd">gstack-brain-restore</span> on every new machine after copying the URL marker. Run <span class="cmd">--status</span> when something feels stale or after <span class="cmd">/gstack-upgrade</span>.</div>
+        <div class="skill-example">$ gstack-brain-sync --status<br>last push: 2026-05-09 18:42 UTC (12h ago)<br>queue: 0 pending<br>mode: artifacts-only<br>status: clean</div>
+        <div class="skill-when" style="margin-top:8px;"><strong>Flow + combines with:</strong> The "follow me across machines" half of persistent memory. Pair with <span class="cmd">/setup-gbrain</span> for the indexable-knowledge-base half. Together: yesterday's machine-A learning is searchable in today's machine-B session — the magic moment.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="tip-title">Why two systems instead of one?</div>
+      <p><strong>GBrain</strong> is a separate, actively-developed project with its own release cadence, schema migrations, and MCP surface. Bundling it would slow GBrain improvements from reaching users. <strong>GStack memory sync</strong> is gstack's own state — kept separate so you can run one without the other. They become powerful together: GBrain provides the indexable surface, gstack-brain provides the content to index.</p>
     </div>
   </section>
 
@@ -2163,8 +2232,8 @@ GOOD: "I need a web app where restaurant owners can manage their<br>
 
     const CANONICAL_URL = 'https://mwonka.github.io/gstack-mastery-guide/gstack-mastery-guide.html';
     const GITHUB_REPO   = 'https://github.com/mwonka/gstack-mastery-guide';
-    const GUIDE_VERSION = '1.3';
-    const LAST_UPDATED  = 'April 2026';
+    const GUIDE_VERSION = '1.4';
+    const LAST_UPDATED  = 'May 2026';
 
     // Inject version info + GitHub link into sidebar
     const sidebarLogo = document.querySelector('.sidebar-logo');
