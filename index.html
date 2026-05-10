@@ -1326,6 +1326,23 @@
         <div class="skill-when">When to use: Once at the start of a new project, before you use /ship for the first time.</div>
         <div class="skill-example">You: /setup-deploy<br>gstack: "What hosting provider are you using? [Vercel / Railway / Fly / AWS / other]... Configuring deployment pipeline..."</div>
       </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/landing-report</div>
+            <div class="skill-role">Role: Ship Queue Dashboard</div>
+          </div>
+          <span class="badge badge-red">Ship</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p><strong>Read-only snapshot of the workspace-aware ship queue.</strong> Shows which version slots are claimed and which sibling workspaces have WIP — critical when running 5–10 Conductor workspaces in parallel and you don't want two of them claiming the same version number.</p>
+          <p>Doesn't modify anything. Pure visibility into "who is shipping what right now" across the whole cluster.</p>
+        </div>
+        <div class="skill-when">When to use: Coordinating multiple branches/workspaces about to ship; before <span class="cmd">/ship</span> when you suspect another workspace is also racing to land.</div>
+        <div class="skill-example">You: /landing-report<br>gstack: "Ship queue: v2.4.1 claimed by workspace-alpha (45min ago, branch feature/billing). v2.4.2 free. workspace-beta has WIP on hotfix/auth. workspace-gamma idle."</div>
+      </div>
     </div>
   </section>
 
@@ -1426,6 +1443,23 @@
         <div class="skill-when">When to use: Run <span class="cmd">gstack-brain-init</span> on the machine you work on most. Run <span class="cmd">gstack-brain-restore</span> on every new machine after copying the URL marker. Run <span class="cmd">--status</span> when something feels stale or after <span class="cmd">/gstack-upgrade</span>.</div>
         <div class="skill-example">$ gstack-brain-sync --status<br>last push: 2026-05-09 18:42 UTC (12h ago)<br>queue: 0 pending<br>mode: artifacts-only<br>status: clean</div>
         <div class="skill-when" style="margin-top:8px;"><strong>Flow + combines with:</strong> The "follow me across machines" half of persistent memory. Pair with <span class="cmd">/setup-gbrain</span> for the indexable-knowledge-base half. Together: yesterday's machine-A learning is searchable in today's machine-B session — the magic moment.</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/sync-gbrain</div>
+            <div class="skill-role">Role: Keep Brain Current</div>
+          </div>
+          <span class="badge badge-green">Memory</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Refreshes GBrain against the current repo's code and teaches the agent <strong>when to prefer <span class="cmd">gbrain search</span> / <span class="cmd">code-def</span> over Grep</strong>. Idempotent — safe to re-run anytime.</p>
+          <p>Without this, GBrain's index drifts behind your code and the agent falls back to slow grep when a fast semantic search exists. Run after big merges, refactors, or whenever search results feel stale.</p>
+        </div>
+        <div class="skill-when">When to use: After significant code changes, after rebasing onto a busy main branch, or periodically to keep brain answers current.</div>
+        <div class="skill-example">You: /sync-gbrain<br>gstack: "Indexed 247 changed files. Updated 1,820 code defs. Agent will now prefer gbrain search for symbol lookups, code-def for definitions, Grep only for raw text patterns."</div>
       </div>
     </div>
 
@@ -1565,10 +1599,44 @@
           <span class="expand-icon">+</span>
         </div>
         <div class="skill-desc">
-          <p>Initial setup for the cookie import feature. Run once to configure which browser to pull cookies from.</p>
+          <p>Auto-detects installed Chromium browsers (Chrome, Arc, Brave, Edge), decrypts cookies via the macOS Keychain, and loads them into the Playwright session. Interactive picker UI lets you choose which domains to import — cookie values never displayed. Or skip the UI by passing a domain directly.</p>
         </div>
-        <div class="skill-when">When to use: Once, during initial gstack setup.</div>
-        <div class="skill-example">You: /setup-browser-cookies<br>gstack: "Which browser do you use? [Chrome / Arc / Brave / Edge]"</div>
+        <div class="skill-when">When to use: Before <span class="cmd">/qa</span> or <span class="cmd">/browse</span> need to test pages behind login.</div>
+        <div class="skill-example">You: /setup-browser-cookies github.com<br>gstack: "Imported 12 cookies for github.com from Comet. Session is ready."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/scrape</div>
+            <div class="skill-role">Role: Browser Data Extractor</div>
+          </div>
+          <span class="badge badge-blue">Browser</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Pull structured data from a web page. <strong>First call</strong> prototypes the extraction interactively via the <span class="cmd">$B</span> browser primitive — Claude figures out the selectors and shape live. <strong>Subsequent calls</strong> matching the same intent run a codified browser-skill in ~200ms.</p>
+          <p>The two-phase flow turns one-off scraping into reusable, fast pipelines: prototype once, run forever.</p>
+        </div>
+        <div class="skill-when">When to use: Pulling structured data from any web page — first time as a prototype, then reuse the codified version.</div>
+        <div class="skill-example">You: /scrape get the top 10 posts from news.ycombinator.com with titles and points<br>gstack: "Prototyping... extracted 10 items. Want me to /skillify this for ~200ms reuse?"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/skillify</div>
+            <div class="skill-role">Role: Skill Codifier</div>
+          </div>
+          <span class="badge badge-green">Meta</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Walks back through your conversation, finds the most recent <span class="cmd">/scrape</span> prototype, and synthesizes a script + test + fixture. Runs the test to verify, then asks before committing.</p>
+          <p>This is how exploratory browser work becomes durable infrastructure. After <span class="cmd">/skillify</span>, the same scrape runs in milliseconds without an LLM in the loop.</p>
+        </div>
+        <div class="skill-when">When to use: Right after a <span class="cmd">/scrape</span> prototype works — codify it for reuse.</div>
+        <div class="skill-example">You: /skillify<br>gstack: "Found /scrape prototype from earlier. Synthesizing script + test + fixture... Tests pass. Commit as scripts/scrape-hn-top.ts? [Y/n]"</div>
       </div>
     </div>
   </section>
@@ -1596,26 +1664,79 @@
           <strong>Search</strong> — find specific learnings<br>
           <strong>Prune</strong> — remove outdated or wrong learnings<br>
           <strong>Export</strong> — save your learnings to share with others</p>
-          <p>This is how gstack avoids making the same mistake twice. After /retro captures learnings, /learn lets you manage them.</p>
+          <p>This is how gstack avoids making the same mistake twice. Every other skill auto-searches your learnings before recommending — when a past insight applies, it surfaces as <em>"Prior learning applied"</em>. After <span class="cmd">/retro</span> captures learnings, <span class="cmd">/learn</span> lets you manage them.</p>
         </div>
-        <div class="skill-when">When to use: Periodically, to review and clean up what gstack has stored about your project.</div>
-        <div class="skill-example">You: /learn<br>gstack: "Here are 12 stored learnings: [1] Always use UTC timestamps in this project, [2] The auth module requires rate limiting..."</div>
+        <div class="skill-when">When to use: Periodically, to review and clean up what gstack has stored about your project. Also: export to share with teammates.</div>
+        <div class="skill-example">You: /learn<br>gstack: "23 learnings (14 high, 6 medium, 3 low). [9/10] API responses always wrapped in { data, error } envelope. [8/10] Tests use factory helpers in test/support/factories.ts. 3 stale (referenced files deleted) — prune? [Y/n]"</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/context-save</div>
+            <div class="skill-role">Role: Save State</div>
+          </div>
+          <span class="badge badge-green">Memory</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Saves the working context — git state, decisions made, remaining work — so a future session can resume from the same point. Not just a TODO list: captures the <em>why</em> behind in-progress choices so the next session doesn't have to re-derive them.</p>
+        </div>
+        <div class="skill-when">When to use: Ending a session mid-task, before a Conductor handoff, or any time you want a checkpoint you can pick up later.</div>
+        <div class="skill-example">You: /context-save<br>gstack: "Saved. Branch: feature/upload-flow. Decisions: chose async enrichment over sync. Remaining: hook up Stripe billing + write 3 regression tests. Resume with /context-restore."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/context-restore</div>
+            <div class="skill-role">Role: Restore State</div>
+          </div>
+          <span class="badge badge-green">Memory</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Resumes from a saved context — even across Conductor workspace handoffs. Pairs with <span class="cmd">/context-save</span> to make multi-session work feel continuous instead of starting cold each time.</p>
+        </div>
+        <div class="skill-when">When to use: Starting a new session and wanting to pick up exactly where you left off.</div>
+        <div class="skill-example">You: /context-restore<br>gstack: "Resuming feature/upload-flow. Last decision: async enrichment. Next 3 items: Stripe wiring → regression tests → /qa pass."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/plan-tune</div>
+            <div class="skill-role">Role: Question Tuner</div>
+          </div>
+          <span class="badge badge-green">Meta</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Self-tunes the sensitivity of <span class="cmd">AskUserQuestion</span> prompts across all plan/review skills. Mark questions as <strong>never-ask</strong> (you've decided), <strong>always-ask</strong> (high-stakes, never auto-resolve), or <strong>only-for-one-way</strong> (only interrupt for irreversible decisions).</p>
+          <p>This is the lever for prompt fatigue. Run after <span class="cmd">/autoplan</span> if it's stopping you on the same questions over and over.</p>
+        </div>
+        <div class="skill-when">When to use: When the planning skills keep asking you about decisions you've already made — or, conversely, when they're auto-resolving things that should always pause for you.</div>
+        <div class="skill-example">You: /plan-tune<br>gstack: "Last 10 plan runs hit 'pick database' 8 times — you always picked Postgres. Mark as never-ask? Also 'should we add auth?' triggered twice — mark as always-ask?"</div>
       </div>
 
       <div class="skill-card" onclick="this.classList.toggle('open')">
         <div class="skill-top">
           <div>
             <div class="skill-name">/codex</div>
-            <div class="skill-role">Role: Codebase Librarian</div>
+            <div class="skill-role">Role: Second Opinion (OpenAI Codex CLI)</div>
           </div>
-          <span class="badge badge-green">Learn</span>
+          <span class="badge badge-yellow">Review</span>
           <span class="expand-icon">+</span>
         </div>
         <div class="skill-desc">
-          <p>A reference system for your codebase. Helps Claude understand and navigate your project's structure, conventions, and important files.</p>
+          <p><strong>Independent review from OpenAI Codex CLI.</strong> Runs against the same diff that <span class="cmd">/review</span> saw, but with a different training distribution — catches what Claude misses. Three modes:</p>
+          <p><strong>Review</strong> — <span class="cmd">codex review</span> against current diff; classifies findings P1/P2/P3; any P1 = FAIL. Fully independent (Codex doesn't see Claude's review).<br>
+          <strong>Challenge</strong> — adversarial mode at maximum reasoning effort (<span class="cmd">xhigh</span>); pen-tests your logic.<br>
+          <strong>Consult</strong> — open conversation with session continuity for follow-ups.</p>
+          <p><strong>Cross-model analysis:</strong> when both <span class="cmd">/review</span> and <span class="cmd">/codex</span> have run, shows overlap (high confidence), unique-to-Codex, and unique-to-Claude — "two doctors, same patient."</p>
         </div>
-        <div class="skill-when">When to use: When starting work on an existing project, or when Claude seems confused about your codebase structure.</div>
-        <div class="skill-example">You: /codex<br>gstack: "Scanning codebase... Found: React frontend in /src, Express API in /api, shared types in /shared..."</div>
+        <div class="skill-when">When to use: When passing tests aren't enough and you want a different model's distribution to spot the bugs Claude misses. Especially before shipping anything risky.</div>
+        <div class="skill-example">You: /codex<br>gstack: "CODEX REVIEW: PASS (3 findings) [P2] race condition in payment handler — concurrent charges double-debit without advisory lock. Cross-model: OVERLAP race condition; UNIQUE TO CODEX token timing; UNIQUE TO CLAUDE N+1 in listing photos."</div>
       </div>
 
       <div class="skill-card" onclick="this.classList.toggle('open')">
@@ -1633,6 +1754,39 @@
         </div>
         <div class="skill-when">When to use: Whenever you want to pull the latest gstack improvements, or when you see a reference to a command you don't have yet.</div>
         <div class="skill-example">You: /gstack-upgrade<br>gstack: "Checking for updates... Found v1.4.2 (you have v1.3.1). Upgrading... Done. New skills added: /devex-review, /pair-agent."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/benchmark-models</div>
+            <div class="skill-role">Role: Model Benchmark</div>
+          </div>
+          <span class="badge badge-green">Meta</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p><strong>Side-by-side cross-model benchmark for skills</strong> — Claude vs GPT vs Gemini on the same prompt. Measures latency, tokens, and cost; optionally adds an LLM-judged quality score.</p>
+          <p>Distinct from <span class="cmd">/benchmark</span> (which measures site performance). This is for deciding which model to route a skill to, or for evaluating a new model release before swapping defaults.</p>
+        </div>
+        <div class="skill-when">When to use: Routing a new skill to the right model, or comparing model performance after a major release.</div>
+        <div class="skill-example">You: /benchmark-models /review<br>gstack: "Sonnet 4.6: 12.4s, $0.18, P1=2 P2=4. GPT-5.1: 18.1s, $0.31, P1=1 P2=6. Gemini 3 Pro: 9.2s, $0.09, P1=1 P2=3. LLM-judge: Claude > Gemini > GPT on signal density."</div>
+      </div>
+
+      <div class="skill-card" onclick="this.classList.toggle('open')">
+        <div class="skill-top">
+          <div>
+            <div class="skill-name">/make-pdf</div>
+            <div class="skill-role">Role: PDF Generator</div>
+          </div>
+          <span class="badge badge-green">Utility</span>
+          <span class="expand-icon">+</span>
+        </div>
+        <div class="skill-desc">
+          <p>Turn any markdown file into a <strong>publication-quality PDF</strong> — proper margins, page numbers, cover pages, clickable table of contents. Pairs naturally with the markdown artifacts gstack produces (retros, design docs, learning exports, release notes).</p>
+        </div>
+        <div class="skill-when">When to use: Producing a sharable PDF from a <span class="cmd">/retro</span>, <span class="cmd">/document-release</span> output, <span class="cmd">/learn</span> export, or design doc from <span class="cmd">/plan-*-review</span>.</div>
+        <div class="skill-example">You: /make-pdf .context/retros/2026-W18.md<br>gstack: "Rendered to retros-2026-W18.pdf — 8 pages, cover, TOC, page numbers."</div>
       </div>
     </div>
   </section>
@@ -2232,7 +2386,7 @@ GOOD: "I need a web app where restaurant owners can manage their<br>
 
     const CANONICAL_URL = 'https://mwonka.github.io/gstack-mastery-guide/gstack-mastery-guide.html';
     const GITHUB_REPO   = 'https://github.com/mwonka/gstack-mastery-guide';
-    const GUIDE_VERSION = '1.4';
+    const GUIDE_VERSION = '1.5';
     const LAST_UPDATED  = 'May 2026';
 
     // Inject version info + GitHub link into sidebar
